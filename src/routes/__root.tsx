@@ -79,6 +79,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "מתמטיקומיקס" },
+      { name: "twitter:description", content: "לומדים גאומטריה, שברים ומספרים עשרוניים בסגנון קומיקס." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a5fe3eab-276b-484f-b29b-37c48c5e8fb4/id-preview-a66cd547--9632601f-d65b-459c-aa11-208c085b8efe.lovable.app-1778225239510.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a5fe3eab-276b-484f-b29b-37c48c5e8fb4/id-preview-a66cd547--9632601f-d65b-459c-aa11-208c085b8efe.lovable.app-1778225239510.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
