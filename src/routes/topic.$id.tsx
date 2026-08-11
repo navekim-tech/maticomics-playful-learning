@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { categoryMeta, topics, type Topic } from "@/data/topics";
 import { ComicGuide } from "@/components/ComicGuide";
+import { getTopicStars, useLearningProgress } from "@/lib/learning-progress";
 
 export const Route = createFileRoute("/topic/$id")({
   component: TopicPage,
@@ -221,7 +222,9 @@ function SmartPractice({ topic }: { topic: Topic }) {
   const [level, setLevel] = useState<Level>("קל");
   const [round, setRound] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
+  const { progress, awardTopicStar } = useLearningProgress();
   const practice = useMemo(() => buildSmartQuestion(topic, level, round), [topic, level, round]);
+  const hasPracticeStar = getTopicStars(progress, topic.id).includes("practice");
 
   return (
     <section className="comic-card p-5 md:p-6 bg-card">
@@ -285,6 +288,13 @@ function SmartPractice({ topic }: { topic: Topic }) {
           }}
         >
           שאלה חדשה ✨
+        </button>
+        <button
+          type="button"
+          className={`comic-btn ${hasPracticeStar ? "comic-btn-primary" : ""}`}
+          onClick={() => awardTopicStar(topic.id, "practice")}
+        >
+          {hasPracticeStar ? "⭐ כוכב תרגול נשמר" : "סיימתי תרגול ⭐"}
         </button>
       </div>
     </section>
@@ -378,7 +388,9 @@ function ComicMission({ topic }: { topic: Topic }) {
   const [frameTexts, setFrameTexts] = useState(["", "", "", ""]);
   const [dataText, setDataText] = useState("");
   const [calculationText, setCalculationText] = useState("");
+  const { progress, awardTopicStar } = useLearningProgress();
   const mission = useMemo(() => buildComicMission(topic, variant), [topic, variant]);
+  const hasComicStar = getTopicStars(progress, topic.id).includes("comic");
 
   const updateFrame = (index: number, value: string) => {
     setFrameTexts((current) => current.map((item, i) => (i === index ? value : item)));
@@ -508,6 +520,16 @@ function ComicMission({ topic }: { topic: Topic }) {
             חישוב: {calculationText || mission.calculationPrompt}
           </p>
         </div>
+
+        <div className="mt-4">
+          <button
+            type="button"
+            className={`comic-btn ${hasComicStar ? "comic-btn-primary" : ""}`}
+            onClick={() => awardTopicStar(topic.id, "comic")}
+          >
+            {hasComicStar ? "⭐ כוכב קומיקס נשמר" : "סיימתי משימת קומיקס ⭐"}
+          </button>
+        </div>
       </div>
     </section>
   );
@@ -517,6 +539,9 @@ function TopicPage() {
   const { id } = Route.useParams();
   const topic = topics.find((t) => t.id === id)!;
   const meta = categoryMeta[topic.category];
+  const { progress, awardTopicStar } = useLearningProgress();
+  const stars = getTopicStars(progress, topic.id);
+  const hasReadStar = stars.includes("read");
 
   return (
     <div className="min-h-screen px-4 py-8 md:py-12">
@@ -539,6 +564,20 @@ function TopicPage() {
         </header>
 
         <div className="space-y-5">
+          <section className="comic-card p-5 md:p-6 bg-card">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h2 className="font-display text-xl md:text-2xl font-bold">הכוכבים שלי בנושא</h2>
+                <p className="text-sm text-muted-foreground mt-1">קריאה · תרגול · משימת קומיקס</p>
+              </div>
+              <div className="text-3xl" aria-label={`${stars.length} מתוך 3 כוכבים`}>
+                {["read", "practice", "comic"].map((star) => (
+                  <span key={star} className={stars.includes(star as never) ? "" : "opacity-25 grayscale"}>⭐</span>
+                ))}
+              </div>
+            </div>
+          </section>
+
           <Section label="מה לומדים כאן?" badge="🎯">
             {topic.intro}
           </Section>
@@ -579,6 +618,18 @@ function TopicPage() {
           <Section label="בדיקת חשיבה" badge="🤔">
             {topic.thinkingCheck}
           </Section>
+
+          <section className="comic-card p-5 md:p-6 bg-card">
+            <h2 className="font-display text-xl md:text-2xl font-bold mb-2">סיימתי לקרוא?</h2>
+            <p className="text-sm text-muted-foreground mb-4">אם ההסבר והדוגמה ברורים, סמנו כוכב קריאה. אפשר לחזור ולעדכן בכל רגע.</p>
+            <button
+              type="button"
+              className={`comic-btn ${hasReadStar ? "comic-btn-primary" : ""}`}
+              onClick={() => awardTopicStar(topic.id, "read")}
+            >
+              {hasReadStar ? "⭐ כוכב קריאה נשמר" : "סיימתי קריאה ⭐"}
+            </button>
+          </section>
 
           <SmartPractice topic={topic} />
 
