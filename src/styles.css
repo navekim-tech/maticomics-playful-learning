@@ -37,6 +37,10 @@
   --color-frac-foreground: var(--frac-foreground);
   --color-dec: var(--dec);
   --color-dec-foreground: var(--dec-foreground);
+  --color-percent: var(--percent);
+  --color-percent-foreground: var(--percent-foreground);
+  --color-powers: var(--powers);
+  --color-powers-foreground: var(--powers-foreground);
   --color-glossary: var(--glossary);
   --color-glossary-foreground: var(--glossary-foreground);
   --color-sun: var(--sun);
@@ -73,6 +77,10 @@
   --frac-foreground: oklch(0.22 0.05 280);
   --dec: oklch(0.78 0.16 145);          /* fresh green */
   --dec-foreground: oklch(0.22 0.05 280);
+  --percent: oklch(0.82 0.17 75);       /* gold */
+  --percent-foreground: oklch(0.22 0.05 280);
+  --powers: oklch(0.76 0.19 285);       /* electric purple */
+  --powers-foreground: oklch(0.99 0 0);
   --glossary: oklch(0.78 0.16 320);     /* pink-purple */
   --glossary-foreground: oklch(0.22 0.05 280);
   --sun: oklch(0.9 0.18 95);
