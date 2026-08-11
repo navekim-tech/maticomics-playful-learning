@@ -291,6 +291,228 @@ function SmartPractice({ topic }: { topic: Topic }) {
   );
 }
 
+
+type ComicFrame = {
+  title: string;
+  prompt: string;
+};
+
+type ComicMissionData = {
+  title: string;
+  setup: string;
+  frames: ComicFrame[];
+  dataPrompt: string;
+  calculationPrompt: string;
+};
+
+function buildComicMission(topic: Topic, variant: number): ComicMissionData {
+  const mainConcept = topic.concepts[variant % topic.concepts.length] ?? topic.title;
+
+  if (topic.id === "sphere-area-volume") {
+    const radius = [2, 3, 4][variant % 3];
+    return {
+      title: "כדור־על של גיבור ופוקסי הבלש",
+      setup: `ציירו קומיקס קצר שבו פוקסי עוזר לגיבור למדוד כדור־על. הרדיוס הוא ${radius} ס״מ, ומשתמשים ב־π=3 כדי לחשב בקלות.`,
+      frames: [
+        { title: "פריים 1 — הכדור החמקמק", prompt: "ציירו גיבור שמחזיק כדור־על עגול. פוקסי אומר: ‘כדור הוא חמקמק — אין לו פינות!’" },
+        { title: "פריים 2 — מציאת הרדיוס", prompt: `ציירו קו מהמרכז לקצה. פוקסי אומר: ‘זה הרדיוס: r=${radius}’.` },
+        { title: "פריים 3 — בחירת נוסחה", prompt: "פוקסי בוחר: שטח פנים הוא המעטפת, נפח הוא המקום בפנים. כאן מחשבים נפח: 4/3 × π × r³." },
+        { title: "פריים 4 — רגע הניצחון", prompt: "כתבו את החישוב ואת התשובה בתוך בועת קומיקס גדולה." },
+      ],
+      dataPrompt: `נתון: רדיוס הכדור r=${radius}, משתמשים ב־π=3.`,
+      calculationPrompt: `נפח = 4/3 × 3 × ${radius}³`,
+    };
+  }
+
+  if (topic.category === "percentages") {
+    const percent = [10, 20, 25][variant % 3];
+    return {
+      title: "חנות הקומיקס של פוקסי",
+      setup: `ציירו סיפור קצר שבו פוקסי מוצא הנחה של ${percent}% וצריך להסביר איך מחשבים אותה.`,
+      frames: [
+        { title: "פריים 1 — שלט ההנחה", prompt: `ציירו שלט גדול: ${percent}% הנחה!` },
+        { title: "פריים 2 — מהו אחוז?", prompt: "פוקסי מסביר שאחוז הוא חלק מתוך 100." },
+        { title: "פריים 3 — החישוב", prompt: "כתבו מחיר מקורי, חשבו את ההנחה, ואז מצאו מחיר חדש." },
+        { title: "פריים 4 — בדיקת היגיון", prompt: "פוקסי בודק: האם המחיר ירד ולא עלה?" },
+      ],
+      dataPrompt: `בחרו מחיר מקורי וחשבו ${percent}% ממנו.`,
+      calculationPrompt: `הנחה = מחיר × ${percent}/100`,
+    };
+  }
+
+  if (topic.category === "powers") {
+    const base = [2, 3, 4][variant % 3];
+    const power = [2, 3, 5][variant % 3];
+    return {
+      title: "מכונת החזקות של פוקסי",
+      setup: `ציירו מכונה קומיקסית שמכפילה את ${base} בעצמו ${power} פעמים.`,
+      frames: [
+        { title: "פריים 1 — המכונה נדלקת", prompt: `פוקסי מכניס את המספר ${base} למכונת החזקות.` },
+        { title: "פריים 2 — לא מתבלבלים", prompt: `פוקסי מזהיר: ${base} בחזקת ${power} זה לא ${base}×${power}.` },
+        { title: "פריים 3 — כפל חוזר", prompt: "כתבו את הכפל החוזר בתוך ענן מחשבה." },
+        { title: "פריים 4 — התוצאה", prompt: "הציגו את התוצאה כמו אפקט קומיקס: בום!" },
+      ],
+      dataPrompt: `נתון: בסיס ${base}, מעריך ${power}.`,
+      calculationPrompt: `${base}^${power} = ${Array(power).fill(base).join(" × ")}`,
+    };
+  }
+
+  return {
+    title: `פוקסי מסביר: ${topic.title}`,
+    setup: `ציירו קומיקס קצר שבו פוקסי עוזר לחבר להבין את המושג "${mainConcept}" מתוך הנושא ${topic.title}.`,
+    frames: [
+      { title: "פריים 1 — הבעיה", prompt: `דמות מתבלבלת בנושא ${topic.title}.` },
+      { title: "פריים 2 — פוקסי מגיע", prompt: `פוקסי מסביר את המושג "${mainConcept}" במילים פשוטות.` },
+      { title: "פריים 3 — דוגמה", prompt: "כתבו דוגמה מספרית קצרה או ציור שממחיש את הרעיון." },
+      { title: "פריים 4 — הבנתי!", prompt: "הדמות מסכמת את הכלל במילים שלה." },
+    ],
+    dataPrompt: `בחרו מספרים פשוטים שמתאימים לנושא: ${topic.title}.`,
+    calculationPrompt: topic.formula,
+  };
+}
+
+function ComicMission({ topic }: { topic: Topic }) {
+  const [variant, setVariant] = useState(0);
+  const [comicTitle, setComicTitle] = useState("");
+  const [heroName, setHeroName] = useState("פוקסי");
+  const [frameTexts, setFrameTexts] = useState(["", "", "", ""]);
+  const [dataText, setDataText] = useState("");
+  const [calculationText, setCalculationText] = useState("");
+  const mission = useMemo(() => buildComicMission(topic, variant), [topic, variant]);
+
+  const updateFrame = (index: number, value: string) => {
+    setFrameTexts((current) => current.map((item, i) => (i === index ? value : item)));
+  };
+
+  const fillWithFoxyAI = () => {
+    setComicTitle(mission.title);
+    setHeroName(topic.id === "sphere-area-volume" ? "גיבור הכדור" : "פוקסי");
+    setDataText(mission.dataPrompt);
+    setCalculationText(mission.calculationPrompt);
+    setFrameTexts(mission.frames.map((frame) => frame.prompt));
+  };
+
+  return (
+    <section className="comic-card p-5 md:p-6 bg-card">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between mb-4">
+        <div>
+          <div className="inline-flex items-center gap-2 rounded-full border-2 border-foreground bg-sun px-3 py-1 text-xs font-bold mb-2">
+            🎨 משימת קומיקס + יוצר קומיקס
+          </div>
+          <h2 className="font-display text-xl md:text-2xl font-bold">הופכים את המתמטיקה לסיפור</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            שלב 1: מציירים במחברת · שלב 2: ממלאים תסריט באתר · שלב 3: פוקסי AI מקומי מציע רעיון.
+          </p>
+        </div>
+        <button
+          type="button"
+          className="comic-btn comic-btn-accent text-sm"
+          onClick={() => {
+            setVariant((value) => value + 1);
+            setFrameTexts(["", "", "", ""]);
+            setDataText("");
+            setCalculationText("");
+          }}
+        >
+          רעיון אחר ✨
+        </button>
+      </div>
+
+      <div className="rounded-2xl border-2 border-dashed border-foreground bg-sun/40 p-4 mb-4">
+        <p className="font-bold mb-2">משימה לציור במחברת</p>
+        <p className="leading-relaxed">{mission.setup}</p>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-2 mb-4">
+        {mission.frames.map((frame, index) => (
+          <div key={frame.title} className="rounded-2xl border-2 border-foreground bg-secondary/50 p-4">
+            <p className="font-bold mb-1">{frame.title}</p>
+            <p className="text-sm leading-relaxed">{frame.prompt}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-2xl border-2 border-foreground bg-card p-4 md:p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h3 className="font-display text-lg font-bold">יוצר קומיקס אינטראקטיבי</h3>
+          <button type="button" className="comic-btn text-sm" onClick={fillWithFoxyAI}>
+            🤖 פוקסי AI מלא לי רעיון
+          </button>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-2 mb-4">
+          <label className="text-sm font-semibold">
+            שם הקומיקס
+            <input
+              value={comicTitle}
+              onChange={(event) => setComicTitle(event.target.value)}
+              placeholder="לדוגמה: כדור־העל של פוקסי"
+              className="mt-1 w-full rounded-xl border-2 border-foreground bg-background px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="text-sm font-semibold">
+            שם הגיבור/ה
+            <input
+              value={heroName}
+              onChange={(event) => setHeroName(event.target.value)}
+              placeholder="פוקסי / גיבורת האחוזים"
+              className="mt-1 w-full rounded-xl border-2 border-foreground bg-background px-3 py-2 text-sm"
+            />
+          </label>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-2">
+          {mission.frames.map((frame, index) => (
+            <label key={frame.title} className="text-sm font-semibold">
+              מה קורה בפריים {index + 1}?
+              <textarea
+                value={frameTexts[index]}
+                onChange={(event) => updateFrame(index, event.target.value)}
+                placeholder={frame.prompt}
+                className="mt-1 min-h-24 w-full rounded-xl border-2 border-foreground bg-background px-3 py-2 text-sm leading-relaxed"
+              />
+            </label>
+          ))}
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-2 mt-4">
+          <label className="text-sm font-semibold">
+            נתונים מתמטיים
+            <textarea
+              value={dataText}
+              onChange={(event) => setDataText(event.target.value)}
+              placeholder={mission.dataPrompt}
+              className="mt-1 min-h-20 w-full rounded-xl border-2 border-foreground bg-background px-3 py-2 text-sm leading-relaxed"
+            />
+          </label>
+          <label className="text-sm font-semibold">
+            חישוב ותשובה
+            <textarea
+              value={calculationText}
+              onChange={(event) => setCalculationText(event.target.value)}
+              placeholder={mission.calculationPrompt}
+              className="mt-1 min-h-20 w-full rounded-xl border-2 border-foreground bg-background px-3 py-2 text-sm leading-relaxed"
+            />
+          </label>
+        </div>
+
+        <div className="mt-5 rounded-2xl border-2 border-foreground bg-muted p-4">
+          <p className="font-bold mb-2">תצוגת סיכום</p>
+          <p className="text-sm leading-relaxed whitespace-pre-line">
+            {comicTitle || mission.title} · גיבור/ה: {heroName || "פוקסי"}
+            {"\n"}
+            {frameTexts.map((text, index) => `פריים ${index + 1}: ${text || mission.frames[index].prompt}`).join("\n")}
+            {"\n"}
+            נתונים: {dataText || mission.dataPrompt}
+            {"\n"}
+            חישוב: {calculationText || mission.calculationPrompt}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function TopicPage() {
   const { id } = Route.useParams();
   const topic = topics.find((t) => t.id === id)!;
@@ -359,6 +581,8 @@ function TopicPage() {
           </Section>
 
           <SmartPractice topic={topic} />
+
+          <ComicMission topic={topic} />
 
           <ComicGuide message={topic.comicTip} />
         </div>
