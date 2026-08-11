@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as GlossaryRouteImport } from './routes/glossary'
 import { Route as TopicIdRouteImport } from './routes/topic.$id'
 import { Route as WorldCategoryRouteImport } from './routes/world.$category'
+import { Route as WorldCategoryQuizRouteImport } from './routes/world.$category.quiz'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,39 +35,63 @@ const WorldCategoryRoute = WorldCategoryRouteImport.update({
   path: '/world/$category',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorldCategoryQuizRoute = WorldCategoryQuizRouteImport.update({
+  id: '/quiz',
+  path: '/quiz',
+  getParentRoute: () => WorldCategoryRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/glossary': typeof GlossaryRoute
   '/topic/$id': typeof TopicIdRoute
-  '/world/$category': typeof WorldCategoryRoute
+  '/world/$category': typeof WorldCategoryRouteWithChildren
+  '/world/$category/quiz': typeof WorldCategoryQuizRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/glossary': typeof GlossaryRoute
   '/topic/$id': typeof TopicIdRoute
-  '/world/$category': typeof WorldCategoryRoute
+  '/world/$category': typeof WorldCategoryRouteWithChildren
+  '/world/$category/quiz': typeof WorldCategoryQuizRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/glossary': typeof GlossaryRoute
   '/topic/$id': typeof TopicIdRoute
-  '/world/$category': typeof WorldCategoryRoute
+  '/world/$category': typeof WorldCategoryRouteWithChildren
+  '/world/$category/quiz': typeof WorldCategoryQuizRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/glossary' | '/topic/$id' | '/world/$category'
+  fullPaths:
+    | '/'
+    | '/glossary'
+    | '/topic/$id'
+    | '/world/$category'
+    | '/world/$category/quiz'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/glossary' | '/topic/$id' | '/world/$category'
-  id: '__root__' | '/' | '/glossary' | '/topic/$id' | '/world/$category'
+  to:
+    | '/'
+    | '/glossary'
+    | '/topic/$id'
+    | '/world/$category'
+    | '/world/$category/quiz'
+  id:
+    | '__root__'
+    | '/'
+    | '/glossary'
+    | '/topic/$id'
+    | '/world/$category'
+    | '/world/$category/quiz'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GlossaryRoute: typeof GlossaryRoute
   TopicIdRoute: typeof TopicIdRoute
-  WorldCategoryRoute: typeof WorldCategoryRoute
+  WorldCategoryRoute: typeof WorldCategoryRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -99,15 +124,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorldCategoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/world/$category/quiz': {
+      id: '/world/$category/quiz'
+      path: '/quiz'
+      fullPath: '/world/$category/quiz'
+      preLoaderRoute: typeof WorldCategoryQuizRouteImport
+      parentRoute: typeof WorldCategoryRoute
+    }
   }
 }
+
+interface WorldCategoryRouteChildren {
+  WorldCategoryQuizRoute: typeof WorldCategoryQuizRoute
+}
+
+const WorldCategoryRouteChildren: WorldCategoryRouteChildren = {
+  WorldCategoryQuizRoute: WorldCategoryQuizRoute,
+}
+
+const WorldCategoryRouteWithChildren = WorldCategoryRoute._addFileChildren(
+  WorldCategoryRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GlossaryRoute: GlossaryRoute,
   TopicIdRoute: TopicIdRoute,
-  WorldCategoryRoute: WorldCategoryRoute,
+  WorldCategoryRoute: WorldCategoryRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
