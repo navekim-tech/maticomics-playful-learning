@@ -6,7 +6,7 @@ export const Route = createFileRoute("/glossary")({
   head: () => ({
     meta: [
       { title: "מילון מושגים — מתמטיקומיקס" },
-      { name: "description", content: "מילון מושגים בגאומטריה, שברים ומספרים עשרוניים." },
+      { name: "description", content: "מילון מושגים בגאומטריה, שברים, מספרים עשרוניים, אחוזים, חזקות ושורשים." },
     ],
   }),
   component: GlossaryPage,
