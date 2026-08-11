@@ -9,29 +9,29 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as GlossaryRouteImport } from './routes/glossary'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as WorldCategoryRouteImport } from './routes/world.$category'
+import { Route as GlossaryRouteImport } from './routes/glossary'
 import { Route as TopicIdRouteImport } from './routes/topic.$id'
+import { Route as WorldCategoryRouteImport } from './routes/world.$category'
 
-const GlossaryRoute = GlossaryRouteImport.update({
-  id: '/glossary',
-  path: '/glossary',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WorldCategoryRoute = WorldCategoryRouteImport.update({
-  id: '/world/$category',
-  path: '/world/$category',
+const GlossaryRoute = GlossaryRouteImport.update({
+  id: '/glossary',
+  path: '/glossary',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TopicIdRoute = TopicIdRouteImport.update({
   id: '/topic/$id',
   path: '/topic/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorldCategoryRoute = WorldCategoryRouteImport.update({
+  id: '/world/$category',
+  path: '/world/$category',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -71,13 +71,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/glossary': {
-      id: '/glossary'
-      path: '/glossary'
-      fullPath: '/glossary'
-      preLoaderRoute: typeof GlossaryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -85,11 +78,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/world/$category': {
-      id: '/world/$category'
-      path: '/world/$category'
-      fullPath: '/world/$category'
-      preLoaderRoute: typeof WorldCategoryRouteImport
+    '/glossary': {
+      id: '/glossary'
+      path: '/glossary'
+      fullPath: '/glossary'
+      preLoaderRoute: typeof GlossaryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/topic/$id': {
@@ -97,6 +90,13 @@ declare module '@tanstack/react-router' {
       path: '/topic/$id'
       fullPath: '/topic/$id'
       preLoaderRoute: typeof TopicIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/world/$category': {
+      id: '/world/$category'
+      path: '/world/$category'
+      fullPath: '/world/$category'
+      preLoaderRoute: typeof WorldCategoryRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
