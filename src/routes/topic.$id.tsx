@@ -535,6 +535,223 @@ function ComicMission({ topic }: { topic: Topic }) {
   );
 }
 
+type LogicTask = {
+  title: string;
+  story: string;
+  inputs: { key: string; label: string; value: number; unit?: string }[];
+  conditionLabel: string;
+  conditionKey?: string;
+  operationLabel: string;
+  outputLabel: string;
+  solve: (values: Record<string, number>) => { ok: boolean; result: string; explanation: string };
+};
+
+function buildLogicTasks(topic: Topic): LogicTask[] {
+  const firstConcept = topic.concepts[0] ?? topic.title;
+
+  if (topic.category === "fractions") {
+    return [
+      {
+        title: `שברים בבלוקים · ${topic.title}`,
+        story: "פוקסי בודק שני שברים. אם המכנים שווים — מחברים רק את המונים.",
+        inputs: [
+          { key: "n1", label: "מונה א", value: 3 },
+          { key: "d1", label: "מכנה א", value: 8 },
+          { key: "n2", label: "מונה ב", value: 2 },
+          { key: "d2", label: "מכנה ב", value: 8 },
+        ],
+        conditionLabel: "אם מכנה א שווה למכנה ב",
+        operationLabel: "מונה תוצאה = מונה א + מונה ב",
+        outputLabel: "הצג שבר תוצאה",
+        solve: (v) => {
+          if (v.d1 !== v.d2) {
+            return { ok: false, result: "צריך מכנה משותף", explanation: `המכנים ${v.d1} ו־${v.d2} אינם שווים, לכן לא מחברים ישר.` };
+          }
+          return { ok: true, result: `${v.n1 + v.n2}/${v.d1}`, explanation: `המכנים שווים, לכן ${v.n1}+${v.n2}=${v.n1 + v.n2} והמכנה נשאר ${v.d1}.` };
+        },
+      },
+    ];
+  }
+
+  if (topic.category === "percentages") {
+    return [
+      {
+        title: `אחוזים בבלוקים · ${topic.title}`,
+        story: "פוקסי מחשב ערך באחוזים. אפשר לשנות מחיר ואחוז ולראות את האלגוריתם.",
+        inputs: [
+          { key: "base", label: "מספר / מחיר", value: 120, unit: "₪" },
+          { key: "percent", label: "אחוז", value: 25, unit: "%" },
+        ],
+        conditionLabel: "אם האחוז בין 0 ל־100",
+        operationLabel: "ערך האחוז = מספר × אחוז ÷ 100",
+        outputLabel: "הצג ערך אחוז והמחיר אחרי הנחה",
+        solve: (v) => {
+          if (v.percent < 0 || v.percent > 100) {
+            return { ok: false, result: "אחוז לא תקין", explanation: "בדמו הזה אחוז צריך להיות בין 0 ל־100." };
+          }
+          const part = (v.base * v.percent) / 100;
+          const after = v.base - part;
+          return { ok: true, result: `${part.toFixed(1)} (${after.toFixed(1)} אחרי הנחה)`, explanation: `${v.percent}% מתוך ${v.base} הם ${part.toFixed(1)}.` };
+        },
+      },
+    ];
+  }
+
+  if (topic.category === "decimals") {
+    return [
+      {
+        title: `עשרוניים בבלוקים · ${topic.title}`,
+        story: "פוקסי מיישר נקודות עשרוניות ומחבר שני מספרים.",
+        inputs: [
+          { key: "a", label: "מספר א", value: 3.4 },
+          { key: "b", label: "מספר ב", value: 2.15 },
+        ],
+        conditionLabel: "אם שני הערכים הם מספרים",
+        operationLabel: "תוצאה = מספר א + מספר ב",
+        outputLabel: "הצג תוצאה עשרונית",
+        solve: (v) => ({ ok: true, result: (v.a + v.b).toFixed(2), explanation: `מחברים ${v.a} + ${v.b} ומקבלים ${(v.a + v.b).toFixed(2)}.` }),
+      },
+    ];
+  }
+
+  if (topic.category === "powers") {
+    return [
+      {
+        title: `חזקות ושורשים בבלוקים · ${topic.title}`,
+        story: "פוקסי בודק חזקה עד 5 — בהתאם לגבול שקבענו ללומדה.",
+        inputs: [
+          { key: "base", label: "בסיס", value: 2 },
+          { key: "exp", label: "מעריך", value: 5 },
+        ],
+        conditionLabel: "אם המעריך בין 2 ל־5",
+        operationLabel: "תוצאה = בסיס בחזקת מעריך",
+        outputLabel: "הצג תוצאת חזקה",
+        solve: (v) => {
+          if (v.exp < 2 || v.exp > 5) {
+            return { ok: false, result: "מחוץ לטווח", explanation: "במתמטיקומיקס כרגע מתרגלים חזקות ושורשים עד 5." };
+          }
+          return { ok: true, result: String(Math.pow(v.base, v.exp)), explanation: `${v.base} בחזקת ${v.exp} = ${Math.pow(v.base, v.exp)}.` };
+        },
+      },
+    ];
+  }
+
+  return [
+    {
+      title: `גאומטריה בבלוקים · ${topic.title}`,
+      story: `פוקסי מתרגם את ${firstConcept} לאלגוריתם קצר עם תנאי וחישוב.`,
+      inputs: [
+        { key: "a", label: topic.id.includes("angle") || topic.id.includes("triangles") ? "זווית א" : "ערך א", value: topic.id.includes("angle") ? 65 : 10 },
+        { key: "b", label: topic.id.includes("angle") || topic.id.includes("triangles") ? "זווית ב" : "ערך ב", value: topic.id.includes("angle") ? 115 : 6 },
+      ],
+      conditionLabel: topic.id.includes("angle") || topic.id.includes("triangles") ? "אם הסכום לא עובר 180" : "אם שני הערכים גדולים מ־0",
+      operationLabel: topic.id.includes("area") ? "שטח = ערך א × ערך ב" : topic.id.includes("perimeter") ? "היקף לדוגמה = ערך א + ערך ב" : "תוצאה = ערך א + ערך ב",
+      outputLabel: "הצג תוצאה והסבר",
+      solve: (v) => {
+        if ((topic.id.includes("angle") || topic.id.includes("triangles")) && v.a + v.b > 180) {
+          return { ok: false, result: "זוויות לא תקינות", explanation: "בתרגיל משולש סכום שתי זוויות לא יכול לעבור 180°." };
+        }
+        if (v.a <= 0 || v.b <= 0) {
+          return { ok: false, result: "ערכים לא תקינים", explanation: "למדידה גאומטרית צריך ערכים חיוביים." };
+        }
+        const value = topic.id.includes("area") ? v.a * v.b : v.a + v.b;
+        return { ok: true, result: String(value), explanation: topic.id.includes("area") ? `חישוב שטח לדוגמה: ${v.a}×${v.b}=${value}.` : `חישוב לדוגמה: ${v.a}+${v.b}=${value}.` };
+      },
+    },
+  ];
+}
+
+const blockStyles = {
+  event: "bg-[#f9a825] border-[#c17900]",
+  variable: "bg-[#1e88e5] border-[#0d47a1]",
+  logic: "bg-[#8e24aa] border-[#4a148c]",
+  math: "bg-[#43a047] border-[#1b5e20]",
+  output: "bg-[#ec407a] border-[#880e4f]",
+};
+
+function BlocklyLikeBlock({ family, children }: { family: keyof typeof blockStyles; children: React.ReactNode }) {
+  return (
+    <div className={`relative rounded-2xl rounded-r-md border-b-4 px-4 py-3 text-white font-bold shadow-md ${blockStyles[family]}`}>
+      <span className="absolute -right-2 top-1/2 h-5 w-5 -translate-y-1/2 rounded-full bg-card/95 border-2 border-white/80" />
+      {children}
+    </div>
+  );
+}
+
+function LogicBlocksLab({ topic }: { topic: Topic }) {
+  const tasks = useMemo(() => buildLogicTasks(topic), [topic]);
+  const [taskIndex, setTaskIndex] = useState(0);
+  const task = tasks[taskIndex % tasks.length];
+  const [values, setValues] = useState<Record<string, number>>(() => Object.fromEntries(task.inputs.map((input) => [input.key, input.value])));
+
+  function loadTask(index: number) {
+    const nextTask = tasks[index % tasks.length];
+    setTaskIndex(index);
+    setValues(Object.fromEntries(nextTask.inputs.map((input) => [input.key, input.value])));
+  }
+
+  const answer = task.solve(values);
+
+  return (
+    <section className="comic-card p-5 md:p-6 bg-card overflow-hidden">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between mb-4">
+        <div>
+          <div className="inline-flex items-center gap-2 rounded-full border-2 border-foreground bg-accent px-3 py-1 text-xs font-bold mb-2">
+            🧱 פוקסי בלוקים · ללא AI/Backend כרגע
+          </div>
+          <h2 className="font-display text-xl md:text-2xl font-bold">{task.title}</h2>
+          <p className="text-sm text-muted-foreground mt-1">{task.story}</p>
+        </div>
+        <button type="button" className="comic-btn text-xs" onClick={() => loadTask(taskIndex + 1)}>
+          שאלה נוספת ↻
+        </button>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-[1.1fr_.9fr]">
+        <div className="rounded-3xl border-2 border-dashed border-foreground bg-sky-50 p-4 space-y-3" dir="rtl">
+          <BlocklyLikeBlock family="event">כאשר לוחצים על התחל</BlocklyLikeBlock>
+
+          {task.inputs.map((input) => (
+            <BlocklyLikeBlock family="variable" key={input.key}>
+              <label className="flex flex-wrap items-center gap-2">
+                <span>קבע {input.label} =</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={values[input.key] ?? input.value}
+                  onChange={(event) => setValues((current) => ({ ...current, [input.key]: Number(event.target.value) }))}
+                  className="w-24 rounded-lg border-2 border-white bg-white px-2 py-1 text-center text-foreground shadow-inner"
+                />
+                {input.unit && <span>{input.unit}</span>}
+              </label>
+            </BlocklyLikeBlock>
+          ))}
+
+          <BlocklyLikeBlock family="logic">{task.conditionLabel}</BlocklyLikeBlock>
+          <div className="mr-6 space-y-3 border-r-4 border-purple-300 pr-4">
+            <BlocklyLikeBlock family="math">אז: {task.operationLabel}</BlocklyLikeBlock>
+            <BlocklyLikeBlock family="output">ואז: {task.outputLabel}</BlocklyLikeBlock>
+          </div>
+        </div>
+
+        <div className="rounded-3xl border-2 border-foreground bg-sun/30 p-4">
+          <h3 className="font-display text-lg font-bold mb-2">פלט התוכנית</h3>
+          <div className="rounded-2xl bg-slate-950 p-4 text-white leading-relaxed">
+            <p className={answer.ok ? "text-green-300 font-bold" : "text-red-300 font-bold"}>
+              {answer.ok ? "✅ התנאי עבר" : "⚠️ התנאי לא עבר"}
+            </p>
+            <p className="mt-2">תוצאה: {answer.result}</p>
+            <p className="mt-2 text-slate-200">{answer.explanation}</p>
+          </div>
+          <p className="text-xs text-muted-foreground mt-3">
+            צבעים לפי משפחות בלוקלי: אירוע כתום, משתנים כחול, לוגיקה סגול, מתמטיקה ירוק, פלט ורוד.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function TopicPage() {
   const { id } = Route.useParams();
   const topic = topics.find((t) => t.id === id)!;
@@ -632,6 +849,8 @@ function TopicPage() {
           </section>
 
           <SmartPractice topic={topic} />
+
+          <LogicBlocksLab topic={topic} />
 
           <ComicMission topic={topic} />
 
