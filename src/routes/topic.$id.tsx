@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { categoryMeta, topics, type Topic } from "@/data/topics";
 import { ComicGuide } from "@/components/ComicGuide";
@@ -661,91 +661,232 @@ function buildLogicTasks(topic: Topic): LogicTask[] {
   ];
 }
 
-const blockStyles = {
-  event: "bg-[#f9a825] border-[#c17900]",
-  variable: "bg-[#1e88e5] border-[#0d47a1]",
-  logic: "bg-[#8e24aa] border-[#4a148c]",
-  math: "bg-[#43a047] border-[#1b5e20]",
-  output: "bg-[#ec407a] border-[#880e4f]",
-};
-
-function BlocklyLikeBlock({ family, children }: { family: keyof typeof blockStyles; children: React.ReactNode }) {
-  return (
-    <div className={`relative rounded-2xl rounded-r-md border-b-4 px-4 py-3 text-white font-bold shadow-md ${blockStyles[family]}`}>
-      <span className="absolute -right-2 top-1/2 h-5 w-5 -translate-y-1/2 rounded-full bg-card/95 border-2 border-white/80" />
-      {children}
-    </div>
-  );
-}
-
-function LogicBlocksLab({ topic }: { topic: Topic }) {
+function TopicBlocklyLab({ topic }: { topic: Topic }) {
   const tasks = useMemo(() => buildLogicTasks(topic), [topic]);
   const [taskIndex, setTaskIndex] = useState(0);
   const task = tasks[taskIndex % tasks.length];
-  const [values, setValues] = useState<Record<string, number>>(() => Object.fromEntries(task.inputs.map((input) => [input.key, input.value])));
+  const blocklyDivRef = useRef<HTMLDivElement | null>(null);
+  const workspaceRef = useRef<any>(null);
+  const BlocklyRef = useRef<any>(null);
+  const [output, setOutput] = useState("טוען סביבת Blockly...");
 
-  function loadTask(index: number) {
-    const nextTask = tasks[index % tasks.length];
-    setTaskIndex(index);
-    setValues(Object.fromEntries(nextTask.inputs.map((input) => [input.key, input.value])));
+  const initialValues = useMemo(
+    () => Object.fromEntries(task.inputs.map((input) => [input.key, input.value])),
+    [task],
+  );
+
+  function valuesFromWorkspace() {
+    const values = { ...initialValues } as Record<string, number>;
+    const workspace = workspaceRef.current;
+    if (!workspace) return values;
+
+    workspace.getAllBlocks(false).forEach((block: any) => {
+      if (block.type === "maticomics_set_value") {
+        const key = block.getFieldValue("KEY");
+        values[key] = Number(block.getFieldValue("VALUE"));
+      }
+    });
+    return values;
   }
 
-  const answer = task.solve(values);
+  function runBlockly() {
+    const values = valuesFromWorkspace();
+    const answer = task.solve(values);
+    setOutput(`${answer.ok ? "✅ התנאי עבר" : "⚠️ התנאי לא עבר"}\nתוצאה: ${answer.result}\n${answer.explanation}`);
+  }
+
+  function loadBlocks(index = taskIndex) {
+    const Blockly = BlocklyRef.current;
+    const workspace = workspaceRef.current;
+    if (!Blockly || !workspace) return;
+
+    const nextTask = tasks[index % tasks.length];
+    workspace.clear();
+
+    const startBlock = workspace.newBlock("maticomics_start");
+    startBlock.initSvg();
+    startBlock.render();
+    startBlock.moveBy(40, 40);
+
+    let previous = startBlock;
+    nextTask.inputs.forEach((input) => {
+      const block = workspace.newBlock("maticomics_set_value");
+      block.setFieldValue(input.key, "KEY");
+      block.setFieldValue(input.label, "LABEL");
+      block.setFieldValue(String(input.value), "VALUE");
+      block.initSvg();
+      block.render();
+      previous.nextConnection?.connect(block.previousConnection);
+      previous = block;
+    });
+
+    const ifBlock = workspace.newBlock("controls_if");
+    ifBlock.initSvg();
+    ifBlock.render();
+    previous.nextConnection?.connect(ifBlock.previousConnection);
+
+    const condition = workspace.newBlock("maticomics_condition");
+    condition.setFieldValue(nextTask.conditionLabel, "TEXT");
+    condition.initSvg();
+    condition.render();
+    ifBlock.getInput("IF0")?.connection?.connect(condition.outputConnection);
+
+    const calc = workspace.newBlock("maticomics_calculate");
+    calc.setFieldValue(nextTask.operationLabel, "TEXT");
+    calc.initSvg();
+    calc.render();
+    ifBlock.getInput("DO0")?.connection?.connect(calc.previousConnection);
+
+    const show = workspace.newBlock("maticomics_output");
+    show.setFieldValue(nextTask.outputLabel, "TEXT");
+    show.initSvg();
+    show.render();
+    calc.nextConnection?.connect(show.previousConnection);
+
+    workspace.render();
+    workspace.zoomToFit?.();
+    setOutput("אפשר לשנות את המספרים בתוך הבלוקים ואז ללחוץ ‘הרץ בלוקים’. ");
+  }
+
+  useEffect(() => {
+    let disposed = false;
+
+    async function setupBlockly() {
+      const Blockly = await import("blockly");
+      await import("blockly/blocks");
+      await import("blockly/javascript");
+      if (disposed || !blocklyDivRef.current) return;
+
+      BlocklyRef.current = Blockly;
+
+      if (!Blockly.Blocks.maticomics_start) {
+        Blockly.Blocks.maticomics_start = {
+          init() {
+            this.appendDummyInput().appendField("כאשר לוחצים על התחל");
+            this.setNextStatement(true, null);
+            this.setColour(35);
+            this.setTooltip("אירוע התחלה — משפחת Events הכתומה.");
+          },
+        };
+      }
+
+      Blockly.Blocks.maticomics_set_value = {
+        init() {
+          this.appendDummyInput()
+            .appendField("קבע")
+            .appendField(new Blockly.FieldLabelSerializable("ערך"), "LABEL")
+            .appendField("=")
+            .appendField(new Blockly.FieldNumber(1, -10000, 10000, 0.01), "VALUE")
+            .appendField(new Blockly.FieldDropdown(task.inputs.map((input) => [input.label, input.key])), "KEY");
+          this.setPreviousStatement(true, null);
+          this.setNextStatement(true, null);
+          this.setColour(210);
+          this.setTooltip("משתנה עם ערך מספרי שניתן לשינוי בתוך הבלוק.");
+        },
+      };
+
+      Blockly.Blocks.maticomics_condition = {
+        init() {
+          this.appendDummyInput().appendField(new Blockly.FieldLabelSerializable("אם התנאי נכון"), "TEXT");
+          this.setOutput(true, "Boolean");
+          this.setColour(260);
+          this.setTooltip("תנאי לוגי — משפחת Logic הסגולה.");
+        },
+      };
+
+      Blockly.Blocks.maticomics_calculate = {
+        init() {
+          this.appendDummyInput().appendField(new Blockly.FieldLabelSerializable("חשב"), "TEXT");
+          this.setPreviousStatement(true, null);
+          this.setNextStatement(true, null);
+          this.setColour(120);
+          this.setTooltip("פעולת חישוב — משפחת Math הירוקה.");
+        },
+      };
+
+      Blockly.Blocks.maticomics_output = {
+        init() {
+          this.appendDummyInput().appendField(new Blockly.FieldLabelSerializable("הצג"), "TEXT");
+          this.setPreviousStatement(true, null);
+          this.setNextStatement(true, null);
+          this.setColour(20);
+          this.setTooltip("פלט/טקסט — משפחת Text הוורודה.");
+        },
+      };
+
+      workspaceRef.current = Blockly.inject(blocklyDivRef.current, {
+        rtl: true,
+        renderer: "geras",
+        trashcan: true,
+        scrollbars: true,
+        zoom: { controls: true, wheel: true, startScale: 0.82, maxScale: 1.3, minScale: 0.45, scaleSpeed: 1.08 },
+        toolbox: {
+          kind: "categoryToolbox",
+          contents: [
+            { kind: "category", name: "התחלה", colour: "35", contents: [{ kind: "block", type: "maticomics_start" }] },
+            { kind: "category", name: "משתנים", colour: "210", contents: [{ kind: "block", type: "maticomics_set_value" }] },
+            { kind: "category", name: "לוגיקה", colour: "260", contents: [{ kind: "block", type: "controls_if" }, { kind: "block", type: "maticomics_condition" }] },
+            { kind: "category", name: "מתמטיקה", colour: "120", contents: [{ kind: "block", type: "maticomics_calculate" }, { kind: "block", type: "math_number" }, { kind: "block", type: "math_arithmetic" }] },
+            { kind: "category", name: "פלט", colour: "20", contents: [{ kind: "block", type: "maticomics_output" }, { kind: "block", type: "text" }] },
+          ],
+        },
+      });
+      loadBlocks(taskIndex);
+    }
+
+    setupBlockly();
+
+    return () => {
+      disposed = true;
+      workspaceRef.current?.dispose();
+      workspaceRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    loadBlocks(taskIndex);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [taskIndex, topic.id]);
 
   return (
-    <section className="comic-card p-5 md:p-6 bg-card overflow-hidden">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between mb-4">
+    <section className="comic-card p-4 md:p-5 bg-card overflow-hidden">
+      <div className="mb-3 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border-2 border-foreground bg-accent px-3 py-1 text-xs font-bold mb-2">
-            🧱 פוקסי בלוקים · ללא AI/Backend כרגע
+          <div className="inline-flex items-center gap-2 rounded-full border-2 border-foreground bg-accent px-3 py-1 text-xs font-bold mb-1">
+            🧱 Blockly אמיתי · Frontend בלבד
           </div>
-          <h2 className="font-display text-xl md:text-2xl font-bold">{task.title}</h2>
-          <p className="text-sm text-muted-foreground mt-1">{task.story}</p>
+          <h2 className="font-display text-xl md:text-2xl font-bold">פוקסי מתכנת את {topic.title}</h2>
         </div>
-        <button type="button" className="comic-btn text-xs" onClick={() => loadTask(taskIndex + 1)}>
-          שאלה נוספת ↻
-        </button>
+        <div className="flex gap-2">
+          <button type="button" className="comic-btn text-xs" onClick={runBlockly}>הרץ בלוקים ▶</button>
+          <button type="button" className="comic-btn text-xs" onClick={() => setTaskIndex((current) => current + 1)}>שאלה נוספת ↻</button>
+        </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1.1fr_.9fr]">
-        <div className="rounded-3xl border-2 border-dashed border-foreground bg-sky-50 p-4 space-y-3" dir="rtl">
-          <BlocklyLikeBlock family="event">כאשר לוחצים על התחל</BlocklyLikeBlock>
-
-          {task.inputs.map((input) => (
-            <BlocklyLikeBlock family="variable" key={input.key}>
-              <label className="flex flex-wrap items-center gap-2">
-                <span>קבע {input.label} =</span>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={values[input.key] ?? input.value}
-                  onChange={(event) => setValues((current) => ({ ...current, [input.key]: Number(event.target.value) }))}
-                  className="w-24 rounded-lg border-2 border-white bg-white px-2 py-1 text-center text-foreground shadow-inner"
-                />
-                {input.unit && <span>{input.unit}</span>}
-              </label>
-            </BlocklyLikeBlock>
-          ))}
-
-          <BlocklyLikeBlock family="logic">{task.conditionLabel}</BlocklyLikeBlock>
-          <div className="mr-6 space-y-3 border-r-4 border-purple-300 pr-4">
-            <BlocklyLikeBlock family="math">אז: {task.operationLabel}</BlocklyLikeBlock>
-            <BlocklyLikeBlock family="output">ואז: {task.outputLabel}</BlocklyLikeBlock>
+      <div className="grid gap-4 lg:grid-cols-[0.85fr_1.15fr]" dir="rtl">
+        <aside className="rounded-3xl border-2 border-foreground bg-sun/35 p-4 lg:max-h-[560px] lg:overflow-auto">
+          <h3 className="font-display text-lg font-bold mb-2">השאלה / הבעיה</h3>
+          <p className="font-bold leading-relaxed">{task.story}</p>
+          <div className="mt-4 rounded-2xl bg-white/80 border-2 border-dashed border-foreground p-3 text-sm leading-relaxed">
+            <p className="font-bold mb-1">מה התוכנית צריכה לעשות?</p>
+            <ol className="list-decimal list-inside space-y-1">
+              <li>לקבל מספרים מתוך הבלוקים.</li>
+              <li>לבדוק תנאי: {task.conditionLabel}.</li>
+              <li>לבצע חישוב: {task.operationLabel}.</li>
+              <li>להציג תשובה: {task.outputLabel}.</li>
+            </ol>
           </div>
-        </div>
-
-        <div className="rounded-3xl border-2 border-foreground bg-sun/30 p-4">
-          <h3 className="font-display text-lg font-bold mb-2">פלט התוכנית</h3>
-          <div className="rounded-2xl bg-slate-950 p-4 text-white leading-relaxed">
-            <p className={answer.ok ? "text-green-300 font-bold" : "text-red-300 font-bold"}>
-              {answer.ok ? "✅ התנאי עבר" : "⚠️ התנאי לא עבר"}
-            </p>
-            <p className="mt-2">תוצאה: {answer.result}</p>
-            <p className="mt-2 text-slate-200">{answer.explanation}</p>
+          <div className="mt-4 rounded-2xl bg-slate-950 p-4 text-white whitespace-pre-line text-sm leading-relaxed">
+            {output}
           </div>
-          <p className="text-xs text-muted-foreground mt-3">
-            צבעים לפי משפחות בלוקלי: אירוע כתום, משתנים כחול, לוגיקה סגול, מתמטיקה ירוק, פלט ורוד.
+          <p className="mt-3 text-xs text-muted-foreground">
+            כרגע אין AI ואין Backend: השאלות והבדיקה מקומיות. בהמשך נחבר יצירת שאלות ושמירת התקדמות.
           </p>
+        </aside>
+
+        <div className="rounded-3xl border-2 border-foreground bg-white overflow-hidden min-h-[520px]">
+          <div ref={blocklyDivRef} className="h-[520px] w-full" dir="ltr" />
         </div>
       </div>
     </section>
@@ -850,7 +991,7 @@ function TopicPage() {
 
           <SmartPractice topic={topic} />
 
-          <LogicBlocksLab topic={topic} />
+          <TopicBlocklyLab topic={topic} />
 
           <ComicMission topic={topic} />
 
