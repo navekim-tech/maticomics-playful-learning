@@ -563,13 +563,55 @@ function normalizeAnswer(value: string) {
     .replace(/٫/g, ".");
 }
 
-function answersMatch(userAnswer: string, expected: string) {
+function gcd(a: number, b: number): number {
+  let x = Math.abs(Math.round(a));
+  let y = Math.abs(Math.round(b));
+  while (y) [x, y] = [y, x % y];
+  return x || 1;
+}
+
+function parseFractionText(value: string) {
+  const normalized = normalizeAnswer(value);
+  const match = normalized.match(/^(-?\d+)\/(-?\d+)$/);
+  if (!match) return null;
+  const numerator = Number(match[1]);
+  const denominator = Number(match[2]);
+  if (!Number.isFinite(numerator) || !Number.isFinite(denominator) || denominator === 0) return null;
+  return { numerator, denominator };
+}
+
+function simplifyFraction(numerator: number, denominator: number) {
+  const divisor = gcd(numerator, denominator);
+  return { numerator: numerator / divisor, denominator: denominator / divisor, divisor };
+}
+
+function checkAnswerMatch(userAnswer: string, expected: string) {
   const user = normalizeAnswer(userAnswer);
   const exp = normalizeAnswer(expected);
-  if (user === exp) return true;
-  const userNum = Number(user);
-  const expNum = Number(exp);
-  return Number.isFinite(userNum) && Number.isFinite(expNum) && Math.abs(userNum - expNum) < 0.01;
+  if (user === exp) return { ok: true, note: "התשובה זהה לתוצאה שחושבה." };
+
+  const userFraction = parseFractionText(userAnswer);
+  const expectedFraction = parseFractionText(expected);
+  if (userFraction && expectedFraction) {
+    const sameValue = userFraction.numerator * expectedFraction.denominator === expectedFraction.numerator * userFraction.denominator;
+    if (sameValue) {
+      const simplifiedExpected = simplifyFraction(expectedFraction.numerator, expectedFraction.denominator);
+      const simplifiedUser = simplifyFraction(userFraction.numerator, userFraction.denominator);
+      const reduced = `${simplifiedExpected.numerator}/${simplifiedExpected.denominator}`;
+      return {
+        ok: true,
+        note: `נכון — אלה שברים שקולים. ${expected} מצטמצם ל־${reduced} כי מחלקים מונה ומכנה ב־${simplifiedExpected.divisor}. גם ${userAnswer} מייצג את אותו חלק: ${simplifiedUser.numerator}/${simplifiedUser.denominator}.`,
+      };
+    }
+  }
+
+  const userNum = Number(user.replace("%", ""));
+  const expNum = Number(exp.replace("%", ""));
+  if (Number.isFinite(userNum) && Number.isFinite(expNum) && Math.abs(userNum - expNum) < 0.01) {
+    return { ok: true, note: "נכון — הערך המספרי תואם לתוצאה." };
+  }
+
+  return { ok: false, note: "התשובה אינה תואמת לתוצאה שחושבה." };
 }
 
 const topicLogicTasks: Record<string, LogicTask> = {
@@ -1010,7 +1052,8 @@ function TopicBlocklyLab({ topic }: { topic: Topic }) {
     const answer = task.solve(values);
     const answerBlock = workspaceRef.current?.getAllBlocks(false).find((block: any) => block.type === "maticomics_answer_text");
     const userAnswer = String(answerBlock?.getFieldValue("ANSWER") ?? "");
-    const answerOk = answer.ok && answersMatch(userAnswer, answer.result);
+    const answerCheck = checkAnswerMatch(userAnswer, answer.result);
+    const answerOk = answer.ok && answerCheck.ok;
 
     if (structureErrors.length) {
       setOutput(`❌ יש בעיה במבנה התוכנית:\n${structureErrors.map((item) => `• ${item}`).join("\n")}\n\nתקנו את הבלוקים ונסו שוב.`);
@@ -1023,11 +1066,11 @@ function TopicBlocklyLab({ topic }: { topic: Topic }) {
     }
 
     if (!answerOk) {
-      setOutput(`❌ תשובה לא נכונה\nמה שכתבתם בבלוק התשובה: ${userAnswer || "ריק"}\nהתשובה הנכונה לפי הבלוקים היא: ${answer.result}\n${answer.explanation}`);
+      setOutput(`❌ תשובה לא נכונה\nמה שכתבתם בבלוק התשובה: ${userAnswer || "ריק"}\nהתשובה הנכונה לפי הבלוקים היא: ${answer.result}\n${answer.explanation}\n${answerCheck.note}`);
       return;
     }
 
-    setOutput(`✅ נכון מאוד\nהתשובה בבלוק תואמת לחישוב: ${answer.result}\n${answer.explanation}`);
+    setOutput(`✅ נכון מאוד\n${answerCheck.note}\n${answer.explanation}`);
   }
 
   function defineBlocks(Blockly: any, currentTask: LogicTask) {
