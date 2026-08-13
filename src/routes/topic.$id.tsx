@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate, notFound } from "@tanstack/react-router";
 import { categoryMeta, topics, type Topic } from "@/data/topics";
 import { ComicGuide } from "@/components/ComicGuide";
 import { getTopicStars, useLearningProgress } from "@/lib/learning-progress";
 
 export const Route = createFileRoute("/topic/$id")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    fromWorld: search.fromWorld === "1" ? "1" : undefined,
+  }),
   component: TopicPage,
   notFoundComponent: () => (
     <div className="p-10 text-center">
@@ -1325,6 +1328,11 @@ function TopicBlocklyLab({ topic }: { topic: Topic }) {
 
 function TopicPage() {
   const { id } = Route.useParams();
+  const { fromWorld } = Route.useSearch();
+
+  if (fromWorld !== "1") {
+    return <Navigate to="/" replace />;
+  }
   const topic = topics.find((t) => t.id === id)!;
   const meta = categoryMeta[topic.category];
   const { progress, awardTopicStar } = useLearningProgress();

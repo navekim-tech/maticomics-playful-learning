@@ -117,7 +117,7 @@ function WorldPage() {
             return (
               <li key={t.id}>
                 {previousUnlocked ? (
-                  <Link to="/topic/$id" params={{ id: t.id }} className="block">
+                  <Link to="/topic/$id" params={{ id: t.id }} search={{ fromWorld: "1" }} className="block">
                     {card}
                   </Link>
                 ) : card}
