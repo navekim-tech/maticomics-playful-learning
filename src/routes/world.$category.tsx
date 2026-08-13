@@ -32,8 +32,17 @@ function WorldPage() {
   const progressPercent = list.length ? Math.round((completed / list.length) * 100) : 0;
 
   return (
-    <div className="min-h-screen px-4 py-8 md:py-12">
+    <div
+      className="min-h-screen px-4 py-8 md:py-12"
+      style={{
+        backgroundImage: cat === "geometry" ? `url(${auroriaMap.url})` : undefined,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <div className="max-w-4xl mx-auto">
+
         <Link to="/" className="comic-btn text-sm mb-6">← חזרה לבית</Link>
 
         <header className="text-center my-6">
