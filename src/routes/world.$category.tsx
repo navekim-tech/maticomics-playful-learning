@@ -4,6 +4,7 @@ import { ComicGuide } from "@/components/ComicGuide";
 import { getTopicStarCount, isTopicDone, useLearningProgress } from "@/lib/learning-progress";
 import auroriaMap from "@/assets/auroria-map.png.asset.json";
 import fractionsMap from "@/assets/fractions-map.webp.asset.json";
+import decimalsMap from "@/assets/decimals-map.png.asset.json";
 
 
 export const Route = createFileRoute("/world/$category")({
