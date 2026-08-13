@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ComicGuide } from "@/components/ComicGuide";
 import { WorldCard } from "@/components/WorldCard";
 import { categoryMeta } from "@/data/topics";
+import azureMap from "@/assets/azure-map.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
