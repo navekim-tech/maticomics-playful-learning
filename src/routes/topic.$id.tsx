@@ -959,10 +959,12 @@ function TopicBlocklyLab({ topic }: { topic: Topic }) {
   const tasks = useMemo(() => buildLogicTasks(topic), [topic]);
   const [taskIndex, setTaskIndex] = useState(0);
   const task = tasks[taskIndex % tasks.length];
+  const [isBlocklyOpen, setIsBlocklyOpen] = useState(false);
+  const [isBlocklyLoading, setIsBlocklyLoading] = useState(false);
   const blocklyDivRef = useRef<HTMLDivElement | null>(null);
   const workspaceRef = useRef<any>(null);
   const BlocklyRef = useRef<any>(null);
-  const [output, setOutput] = useState("טוען סביבת Blockly...");
+  const [output, setOutput] = useState("פעילות Blockly עדיין לא נטענה. לחצו על ‘פתח פעילות Blockly’ רק כשתרצו להתחיל לעבוד עם בלוקים.");
 
   const initialValues = useMemo(
     () => Object.fromEntries(task.inputs.map((input) => [input.key, input.value])),
@@ -1047,6 +1049,11 @@ function TopicBlocklyLab({ topic }: { topic: Topic }) {
   }
 
   function runBlockly() {
+    if (!workspaceRef.current) {
+      setOutput("פתחו קודם את פעילות Blockly, ואז לחצו ‘בדוק והריץ’.");
+      return;
+    }
+
     const structureErrors = validateStructure();
     const values = valuesFromWorkspace();
     const answer = task.solve(values);
@@ -1196,9 +1203,13 @@ function TopicBlocklyLab({ topic }: { topic: Topic }) {
   }
 
   useEffect(() => {
+    if (!isBlocklyOpen || BlocklyRef.current || workspaceRef.current) return;
+
     let disposed = false;
 
     async function setupBlockly() {
+      setIsBlocklyLoading(true);
+      setOutput("טוען סביבת Blockly...");
       const Blockly = await import("blockly");
       await import("blockly/blocks");
       if (disposed || !blocklyDivRef.current) return;
@@ -1226,9 +1237,14 @@ function TopicBlocklyLab({ topic }: { topic: Topic }) {
         },
       });
       loadBlocks(taskIndex);
+      setIsBlocklyLoading(false);
     }
 
-    setupBlockly();
+    setupBlockly().catch((error) => {
+      console.error("Failed to load Blockly", error);
+      setIsBlocklyLoading(false);
+      setOutput("❌ לא הצלחתי לטעון את סביבת Blockly. רעננו את הדף ונסו שוב.");
+    });
 
     return () => {
       disposed = true;
@@ -1236,9 +1252,10 @@ function TopicBlocklyLab({ topic }: { topic: Topic }) {
       workspaceRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isBlocklyOpen]);
 
   useEffect(() => {
+    if (!workspaceRef.current) return;
     loadBlocks(taskIndex);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taskIndex, topic.id]);
@@ -1253,8 +1270,13 @@ function TopicBlocklyLab({ topic }: { topic: Topic }) {
           <h2 className="font-display text-xl md:text-2xl font-bold">פוקסי מתכנת את {topic.title}</h2>
         </div>
         <div className="flex gap-2">
-          <button type="button" className="comic-btn text-xs" onClick={runBlockly}>בדוק והריץ ▶</button>
-          <button type="button" className="comic-btn text-xs" onClick={() => loadBlocks(taskIndex)}>אפס דוגמה</button>
+          {!isBlocklyOpen ? (
+            <button type="button" className="comic-btn text-xs" onClick={() => setIsBlocklyOpen(true)}>
+              פתח פעילות Blockly 🧱
+            </button>
+          ) : null}
+          <button type="button" className="comic-btn text-xs" onClick={runBlockly} disabled={!workspaceRef.current || isBlocklyLoading}>בדוק והריץ ▶</button>
+          <button type="button" className="comic-btn text-xs" onClick={() => loadBlocks(taskIndex)} disabled={!workspaceRef.current || isBlocklyLoading}>אפס דוגמה</button>
         </div>
       </div>
 
@@ -1281,7 +1303,20 @@ function TopicBlocklyLab({ topic }: { topic: Topic }) {
         </aside>
 
         <div className="rounded-3xl border-2 border-foreground bg-white overflow-hidden min-h-[640px] relative">
-          <div ref={blocklyDivRef} className="h-[640px] w-full [&_.blocklyToolboxDiv]:!bg-orange-50 [&_.blocklyFlyout]:!z-20 [&_.blocklyWidgetDiv]:!z-50" dir="ltr" />
+          {!isBlocklyOpen ? (
+            <div className="flex h-[640px] flex-col items-center justify-center gap-4 p-8 text-center" dir="rtl">
+              <div className="text-6xl">🧱</div>
+              <h3 className="font-display text-2xl font-extrabold">Blockly נטען רק כשצריך</h3>
+              <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
+                כדי שהדף ייפתח מהר יותר, סביבת הבלוקים הכבדה לא נטענת אוטומטית. פתחו אותה כשאתם מוכנים לתרגול התכנותי.
+              </p>
+              <button type="button" className="comic-btn" onClick={() => setIsBlocklyOpen(true)}>
+                פתח פעילות Blockly 🧱
+              </button>
+            </div>
+          ) : (
+            <div ref={blocklyDivRef} className="h-[640px] w-full [&_.blocklyToolboxDiv]:!bg-orange-50 [&_.blocklyFlyout]:!z-20 [&_.blocklyWidgetDiv]:!z-50" dir="ltr" />
+          )}
         </div>
       </div>
     </section>
