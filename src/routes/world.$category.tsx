@@ -36,7 +36,12 @@ function WorldPage() {
     <div
       className="min-h-screen px-4 py-8 md:py-12"
       style={{
-        backgroundImage: cat === "geometry" ? `url(${auroriaMap.url})` : undefined,
+        backgroundImage:
+          cat === "geometry"
+            ? `url(${auroriaMap.url})`
+            : cat === "fractions"
+              ? `url(${fractionsMap.url})`
+              : undefined,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
