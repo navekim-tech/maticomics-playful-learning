@@ -42,7 +42,9 @@ function WorldPage() {
             ? `url(${auroriaMap.url})`
             : cat === "fractions"
               ? `url(${fractionsMap.url})`
-              : undefined,
+              : cat === "decimals"
+                ? `url(${decimalsMap.url})`
+                : undefined,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
