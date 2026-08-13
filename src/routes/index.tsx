@@ -57,7 +57,7 @@ function Index() {
     <div
       className="min-h-screen px-4 py-8 md:py-12"
       style={{
-        backgroundImage: `linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.72)), url(${azureMap.url})`,
+        backgroundImage: `linear-gradient(rgba(15,23,42,0.45), rgba(15,23,42,0.45)), url(${azureMap.url})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",

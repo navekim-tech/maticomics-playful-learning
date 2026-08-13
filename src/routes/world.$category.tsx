@@ -3,6 +3,7 @@ import { categoryMeta, topics, type Category } from "@/data/topics";
 import { ComicGuide } from "@/components/ComicGuide";
 import { getTopicStarCount, isTopicDone, useLearningProgress } from "@/lib/learning-progress";
 import auroriaMap from "@/assets/auroria-map.png.asset.json";
+import fractionsMap from "@/assets/fractions-map.webp.asset.json";
 
 
 export const Route = createFileRoute("/world/$category")({
@@ -35,7 +36,12 @@ function WorldPage() {
     <div
       className="min-h-screen px-4 py-8 md:py-12"
       style={{
-        backgroundImage: cat === "geometry" ? `url(${auroriaMap.url})` : undefined,
+        backgroundImage:
+          cat === "geometry"
+            ? `url(${auroriaMap.url})`
+            : cat === "fractions"
+              ? `url(${fractionsMap.url})`
+              : undefined,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
