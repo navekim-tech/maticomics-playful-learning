@@ -54,16 +54,24 @@ const worlds = [
 
 function Index() {
   return (
-    <div className="min-h-screen px-4 py-8 md:py-12">
+    <div
+      className="min-h-screen px-4 py-8 md:py-12"
+      style={{
+        backgroundImage: `linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.72)), url(${azureMap.url})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <div className="max-w-5xl mx-auto">
         <header className="text-center mb-10">
           <div className="inline-block bg-accent border-[3px] border-foreground rounded-2xl px-6 py-2 mb-4 -rotate-2 shadow-[4px_4px_0_0_var(--color-border)]">
             <span className="font-display font-bold text-sm md:text-base">כיתות ו׳–ז׳ · למידה צעירה וחכמה</span>
           </div>
-          <h1 className="font-display text-5xl md:text-7xl font-extrabold mb-3">
+          <h1 className="font-display text-5xl md:text-7xl font-extrabold mb-3 text-white drop-shadow-lg">
             מתמטיקומיקס
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto drop-shadow">
             לומדה קומיקסית במתמטיקה: הסבר קצר, דוגמה פתורה, תרגול למחברת ומחולל שאלות חכם בכל נושא.
           </p>
         </header>
@@ -102,7 +110,7 @@ function Index() {
           />
         </section>
 
-        <footer className="text-center mt-12 text-sm text-muted-foreground">
+        <footer className="text-center mt-12 text-sm text-white/80">
           לומדים בקצב שלכם · עם מחברת, עיפרון ופוקסי AI ✏️
         </footer>
       </div>
