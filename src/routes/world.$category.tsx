@@ -3,6 +3,7 @@ import { categoryMeta, topics, type Category } from "@/data/topics";
 import { ComicGuide } from "@/components/ComicGuide";
 import { getTopicStarCount, isTopicDone, useLearningProgress } from "@/lib/learning-progress";
 import auroriaMap from "@/assets/auroria-map.png.asset.json";
+import fractionsMap from "@/assets/fractions-map.webp.asset.json";
 
 
 export const Route = createFileRoute("/world/$category")({
