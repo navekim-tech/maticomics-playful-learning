@@ -45,11 +45,12 @@ function WorldPage() {
 
         <Link to="/" className="comic-btn text-sm mb-6">← חזרה לבית</Link>
 
-        <header className="text-center my-6">
+        <header className="text-center my-6" style={{ textShadow: "0 2px 8px rgba(255,255,255,0.9)" }}>
           <div className="text-6xl mb-2">{meta.emoji}</div>
           <h1 className="font-display text-4xl md:text-5xl font-extrabold">{meta.title}</h1>
           <p className="text-muted-foreground mt-2">מסלול למידה: נושא אחרי נושא, כוכבים, ואז מבחן פוקסי קצר</p>
         </header>
+
 
         <div className="mb-8">
           <ComicGuide message="המסלול נפתח בהדרגה. בכל נושא אפשר לאסוף עד 3 כוכבים: קריאה, תרגול ומשימת קומיקס. כשתרגישו מוכנים — עברו למבחן סוף עולם." />
