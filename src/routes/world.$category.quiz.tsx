@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { categoryMeta, topics, type Category } from "@/data/topics";
 import { ComicGuide } from "@/components/ComicGuide";
-import { isTopicQuizReady, useLearningProgress } from "@/lib/learning-progress";
+import { getTopicStars, isTopicQuizReady, useLearningProgress } from "@/lib/learning-progress";
 
 type QuizQuestion = {
   question: string;
@@ -73,6 +73,16 @@ function WorldQuizPage() {
   const [submitted, setSubmitted] = useState(false);
   const questions = useMemo(() => quizBank[cat], [cat]);
   const unlocked = worldTopics.every((topic) => isTopicQuizReady(progress, topic.id));
+  const quizMissing = worldTopics
+    .map((topic) => {
+      const stars = getTopicStars(progress, topic.id);
+      const missing = [
+        !stars.includes("read") ? "קריאה" : null,
+        !stars.includes("practice") ? "תרגול" : null,
+      ].filter(Boolean);
+      return missing.length ? `${topic.title}: ${missing.join(" + ")}` : null;
+    })
+    .filter(Boolean);
   const score = questions.reduce((sum, question, index) => sum + (answers[index] === question.answer ? 1 : 0), 0);
   const previous = progress.quizzes[cat];
 
@@ -112,8 +122,16 @@ function WorldQuizPage() {
           <section className="comic-card p-4 md:p-5 mb-6 ">
             <h2 className="font-display text-xl font-bold mb-2">המבחן עדיין נעול רכה 🔒</h2>
             <p className="text-sm leading-relaxed">
-              כדי לפתוח את מבחן פוקסי צריך להשלים בכל נושא את מטלת הקריאה ואת מטלת התרגול. משימת הקומיקס היא בשביל FUN והיא לא חוסמת את המבחן. אם אתם רק בודקים את המערכת, אפשר עדיין לענות — אבל לתלמידים זה יהיה סימן לחזור לקריאה ולתרגול.
+              כדי לפתוח את מבחן פוקסי צריך להשלים בכל נושא את מטלת הקריאה ואת מטלת התרגול. משימת הקומיקס היא בשביל FUN והיא לא חוסמת את המבחן.
             </p>
+            {quizMissing.length > 0 && (
+              <div className="mt-4 rounded-2xl border-2 border-dashed border-foreground bg-slate-950/70 p-3 text-sm leading-relaxed">
+                <p className="font-bold mb-2">מה חסר לפתיחה?</p>
+                <ul className="list-disc list-inside space-y-1">
+                  {quizMissing.map((item) => <li key={item}>{item}</li>)}
+                </ul>
+              </div>
+            )}
           </section>
         )}
 
@@ -140,7 +158,7 @@ function WorldQuizPage() {
                     <button
                       key={option}
                       type="button"
-                      disabled={submitted}
+                      disabled={submitted || !unlocked}
                       onClick={() => setAnswers((current) => ({ ...current, [index]: optionIndex }))}
                       className={`rounded-xl border-2 border-foreground px-4 py-3 text-right font-semibold transition ${selected ? "bg-accent" : "bg-background"} ${correct ? "bg-green-200" : ""} ${wrong ? "bg-red-200" : ""}`}
                     >
@@ -189,11 +207,13 @@ function WorldQuizPage() {
           ) : (
             <>
               <h2 className="font-display text-2xl font-bold mb-2">מוכנים לבדיקה?</h2>
-              <p className="text-sm text-muted-foreground mb-4">ענו על כל 5 השאלות ואז פוקסי ייתן משוב.</p>
+              <p className="text-sm text-muted-foreground mb-4">
+                {unlocked ? "ענו על כל 5 השאלות ואז פוקסי ייתן משוב." : "אפשר לקרוא את ההסבר כאן, אבל כדי לענות צריך להשלים קריאה ותרגול בכל נושא."}
+              </p>
               <button
                 type="button"
                 className="comic-btn comic-btn-primary"
-                disabled={Object.keys(answers).length < questions.length}
+                disabled={!unlocked || Object.keys(answers).length < questions.length}
                 onClick={submit}
               >
                 בדקו תשובות 🦊
