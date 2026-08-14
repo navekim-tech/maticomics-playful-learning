@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { categoryMeta, topics, type Category } from "@/data/topics";
 import { ComicGuide } from "@/components/ComicGuide";
-import { getTopicStarCount, isTopicDone, isTopicQuizReady, useLearningProgress } from "@/lib/learning-progress";
+import { getTopicStarCount, getTopicStars, isTopicDone, isTopicQuizReady, useLearningProgress } from "@/lib/learning-progress";
 import auroriaMap from "@/assets/auroria-map.png.asset.json";
 import fractionsMap from "@/assets/fractions-map.webp.asset.json";
 import decimalsMap from "@/assets/decimals-map.png.asset.json";
@@ -33,6 +33,16 @@ function WorldPage() {
   const maxStars = list.length * 3;
   const quiz = progress.quizzes[cat];
   const quizUnlocked = list.every((topic) => isTopicQuizReady(progress, topic.id));
+  const quizMissing = list
+    .map((topic) => {
+      const stars = getTopicStars(progress, topic.id);
+      const missing = [
+        !stars.includes("read") ? "קריאה" : null,
+        !stars.includes("practice") ? "תרגול" : null,
+      ].filter(Boolean);
+      return missing.length ? `${topic.title}: ${missing.join(" + ")}` : null;
+    })
+    .filter(Boolean);
   const progressPercent = list.length ? Math.round((completed / list.length) * 100) : 0;
 
   return (
@@ -147,9 +157,19 @@ function WorldPage() {
                 התחילו מבחן 🦊
               </a>
             ) : (
-              <span className="comic-btn opacity-60 cursor-not-allowed">השלימו קריאה ותרגול בכל נושא 🔒</span>
+              <a href={`/world/${cat}/quiz`} className="comic-btn">
+                צפו בהסבר ומה חסר 🔒
+              </a>
             )}
           </div>
+          {!quizUnlocked && quizMissing.length > 0 && (
+            <div className="mt-4 rounded-2xl border-2 border-dashed border-foreground bg-slate-950/70 p-3 text-sm leading-relaxed">
+              <p className="font-bold mb-2">כדי לפתוח את המבחן חסר עדיין:</p>
+              <ul className="list-disc list-inside space-y-1">
+                {quizMissing.map((item) => <li key={item}>{item}</li>)}
+              </ul>
+            </div>
+          )}
         </section>
       </div>
     </div>
