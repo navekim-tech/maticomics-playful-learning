@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { categoryMeta, topics, type Category } from "@/data/topics";
 import { ComicGuide } from "@/components/ComicGuide";
-import { getTopicStarCount, isTopicDone, useLearningProgress } from "@/lib/learning-progress";
+import { getTopicStarCount, isTopicDone, isTopicQuizReady, useLearningProgress } from "@/lib/learning-progress";
 import auroriaMap from "@/assets/auroria-map.png.asset.json";
 import fractionsMap from "@/assets/fractions-map.webp.asset.json";
 import decimalsMap from "@/assets/decimals-map.png.asset.json";
@@ -32,7 +32,7 @@ function WorldPage() {
   const earnedStars = list.reduce((sum, topic) => sum + getTopicStarCount(progress, topic.id), 0);
   const maxStars = list.length * 3;
   const quiz = progress.quizzes[cat];
-  const quizUnlocked = list.every((topic) => isTopicDone(progress, topic.id));
+  const quizUnlocked = list.every((topic) => isTopicQuizReady(progress, topic.id));
   const progressPercent = list.length ? Math.round((completed / list.length) * 100) : 0;
 
   return (
@@ -138,7 +138,7 @@ function WorldPage() {
               <div className="text-4xl mb-2">🏁</div>
               <h2 className="font-display text-2xl font-bold">מבחן פוקסי סוף עולם</h2>
               <p className="text-sm text-muted-foreground mt-1">
-                5 שאלות קצרות: בסיס, יישום ואתגר. המבחן נפתח אחרי השלמת כל המטלות בעולם: קריאה, תרגול ומשימת קומיקס בכל נושא.
+                5 שאלות קצרות: בסיס, יישום ואתגר. המבחן נפתח אחרי השלמת קריאה ותרגול בכל נושא. משימת הקומיקס היא כוכב FUN ולא חוסמת את המבחן.
               </p>
               {quiz && <p className="mt-2 font-bold">ניסיון אחרון: {quiz.score}/{quiz.total}</p>}
             </div>
@@ -147,7 +147,7 @@ function WorldPage() {
                 התחילו מבחן 🦊
               </a>
             ) : (
-              <span className="comic-btn opacity-60 cursor-not-allowed">השלימו את כל מטלות העולם 🔒</span>
+              <span className="comic-btn opacity-60 cursor-not-allowed">השלימו קריאה ותרגול בכל נושא 🔒</span>
             )}
           </div>
         </section>
