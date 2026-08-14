@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { glossary } from "@/data/topics";
 import { ComicGuide } from "@/components/ComicGuide";
+import glossaryMap from "@/assets/glossary-map.png.asset.json";
 
 export const Route = createFileRoute("/glossary")({
   head: () => ({
@@ -14,11 +15,19 @@ export const Route = createFileRoute("/glossary")({
 
 function GlossaryPage() {
   return (
-    <div className="min-h-screen px-4 py-8 md:py-12">
+    <div
+      className="min-h-screen px-4 py-8 md:py-12"
+      style={{
+        backgroundImage: `url(${glossaryMap.url})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <div className="max-w-4xl mx-auto">
         <Link to="/" className="comic-btn text-sm mb-6">← חזרה לבית</Link>
 
-        <header className="text-center my-6">
+        <header className="text-center my-6" style={{ textShadow: "0 2px 8px rgba(255,255,255,0.9)" }}>
           <div className="text-6xl mb-2">📖</div>
           <h1 className="font-display text-4xl md:text-5xl font-extrabold">מילון מושגים</h1>
           <p className="text-muted-foreground mt-2">כל המושגים החשובים במקום אחד</p>
