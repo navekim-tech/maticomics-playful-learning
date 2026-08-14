@@ -71,7 +71,7 @@ function WorldPage() {
           <ComicGuide message="המסלול נפתח בהדרגה. בכל נושא אפשר לאסוף עד 3 כוכבים: קריאה, תרגול ומשימת קומיקס. כשתרגישו מוכנים — עברו למבחן סוף עולם." />
         </div>
 
-        <section className="comic-card p-5 md:p-6 mb-6 bg-card">
+        <section className="comic-card p-4 md:p-5 mb-6">
           <div className="grid gap-4 md:grid-cols-3">
             <div>
               <p className="text-sm text-muted-foreground">התקדמות עולם</p>
@@ -109,7 +109,7 @@ function WorldPage() {
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <h2 className="text-xl font-bold leading-snug">{String(i + 1).padStart(2, "0")} · {t.title}</h2>
-                      <span className="rounded-full border-2 border-foreground bg-card px-3 py-1 text-sm font-bold">
+                      <span className="rounded-full border-2 border-foreground px-3 py-1 text-sm font-bold">
                         {"⭐".repeat(stars)}{"☆".repeat(3 - stars)} {stars}/3
                       </span>
                     </div>
@@ -132,7 +132,7 @@ function WorldPage() {
           })}
         </ol>
 
-        <section className="comic-card p-5 md:p-6 mt-6 bg-card">
+        <section className="comic-card p-4 md:p-5 mt-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <div className="text-4xl mb-2">🏁</div>

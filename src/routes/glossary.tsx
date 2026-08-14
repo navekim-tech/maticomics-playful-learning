@@ -39,7 +39,7 @@ function GlossaryPage() {
 
         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {glossary.map((g) => (
-            <li key={g.term} className="comic-card p-5" style={{ background: "var(--glossary)" }}>
+            <li key={g.term} className="comic-card p-4" style={{ background: "var(--glossary)" }}>
               <h2 className="font-display text-xl font-bold mb-1">{g.term}</h2>
               <p className="text-sm leading-relaxed">{g.definition}</p>
             </li>

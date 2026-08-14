@@ -88,7 +88,7 @@ function WorldQuizPage() {
           ← חזרה ל{meta.title}
         </Link>
 
-        <header className="comic-card p-6 md:p-8 mb-6 text-center" style={{ background: `var(--${meta.color})` }}>
+        <header className="comic-card p-4 md:p-6 mb-6 text-center" style={{ background: `var(--${meta.color})` }}>
           <div className="text-5xl mb-2">🦊</div>
           <h1 className="font-display text-3xl md:text-4xl font-extrabold">מבחן פוקסי — {meta.title}</h1>
           <p className="mt-2 opacity-80">5 שאלות קצרות לסיכום העולם</p>
@@ -99,7 +99,7 @@ function WorldQuizPage() {
         </div>
 
         {!unlocked && (
-          <section className="comic-card p-5 md:p-6 mb-6 bg-sun/60">
+          <section className="comic-card p-4 md:p-5 mb-6 ">
             <h2 className="font-display text-xl font-bold mb-2">המבחן עדיין נעול רכה 🔒</h2>
             <p className="text-sm leading-relaxed">
               כדאי לאסוף לפחות כוכב אחד בכל נושא בעולם הזה לפני המבחן. אם אתם רק בודקים את המערכת, אפשר עדיין לענות — אבל לתלמידים זה יהיה סימן לחזור למסלול.
@@ -108,14 +108,14 @@ function WorldQuizPage() {
         )}
 
         {previous && (
-          <section className="comic-card p-4 mb-6 bg-card">
+          <section className="comic-card p-4 mb-6">
             <p className="font-bold">ניסיון קודם: {previous.score}/{previous.total}</p>
           </section>
         )}
 
         <div className="space-y-4">
           {questions.map((question, index) => (
-            <section key={question.question} className="comic-card p-5 bg-card">
+            <section key={question.question} className="comic-card p-4">
               <div className="flex items-start justify-between gap-3 mb-3">
                 <h2 className="font-display text-lg md:text-xl font-bold">שאלה {index + 1}</h2>
                 {question.topicHint && <span className="rounded-full border-2 border-foreground bg-accent px-2 py-1 text-xs font-bold">{question.topicHint}</span>}
@@ -148,7 +148,7 @@ function WorldQuizPage() {
           ))}
         </div>
 
-        <section className="comic-card p-5 md:p-6 mt-6 bg-card text-center">
+        <section className="comic-card p-4 md:p-5 mt-6 text-center">
           {submitted ? (
             <>
               <div className="text-5xl mb-2">{score >= 4 ? "🏆" : score >= 3 ? "⭐" : "💪"}</div>
