@@ -92,7 +92,7 @@ function WorldQuizPage() {
   };
 
   return (
-    <div className="min-h-screen px-4 py-8 md:py-12">
+    <div className="foxy-quiz-page min-h-screen px-4 py-8 md:py-12">
       <div className="max-w-3xl mx-auto">
         <Link to="/world/$category" params={{ category: cat }} className="comic-btn text-sm mb-6">
           ← חזרה ל{meta.title}
