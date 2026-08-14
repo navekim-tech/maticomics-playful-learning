@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { categoryMeta, topics, type Category } from "@/data/topics";
 import { ComicGuide } from "@/components/ComicGuide";
-import { getTopicStarCount, getTopicStars, isTopicDone, isTopicQuizReady, useLearningProgress } from "@/lib/learning-progress";
+import { getTopicStarCount, getTopicStars, isTopicQuizReady, useLearningProgress } from "@/lib/learning-progress";
 import auroriaMap from "@/assets/auroria-map.png.asset.json";
 import fractionsMap from "@/assets/fractions-map.webp.asset.json";
 import decimalsMap from "@/assets/decimals-map.png.asset.json";
@@ -28,7 +28,7 @@ function WorldPage() {
   const meta = categoryMeta[cat];
   const list = topics.filter((t) => t.category === cat);
   const { progress } = useLearningProgress();
-  const completed = list.filter((topic) => isTopicDone(progress, topic.id)).length;
+  const requiredCompleted = list.filter((topic) => isTopicQuizReady(progress, topic.id)).length;
   const earnedStars = list.reduce((sum, topic) => sum + getTopicStarCount(progress, topic.id), 0);
   const maxStars = list.length * 3;
   const quiz = progress.quizzes[cat];
@@ -43,7 +43,7 @@ function WorldPage() {
       return missing.length ? `${topic.title}: ${missing.join(" + ")}` : null;
     })
     .filter(Boolean);
-  const progressPercent = list.length ? Math.round((completed / list.length) * 100) : 0;
+  const progressPercent = list.length ? Math.round((requiredCompleted / list.length) * 100) : 0;
 
   return (
     <div
@@ -84,8 +84,8 @@ function WorldPage() {
         <section className="comic-card p-4 md:p-5 mb-6">
           <div className="grid gap-4 md:grid-cols-3">
             <div>
-              <p className="text-sm text-muted-foreground">התקדמות עולם</p>
-              <p className="font-display text-3xl font-bold">{completed}/{list.length}</p>
+              <p className="text-sm text-muted-foreground">מטלות חובה למבחן</p>
+              <p className="font-display text-3xl font-bold">{requiredCompleted}/{list.length}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">כוכבים</p>
@@ -153,13 +153,13 @@ function WorldPage() {
               {quiz && <p className="mt-2 font-bold">ניסיון אחרון: {quiz.score}/{quiz.total}</p>}
             </div>
             {quizUnlocked ? (
-              <a href={`/world/${cat}/quiz`} className="comic-btn comic-btn-primary">
+              <Link to="/world/$category/quiz" params={{ category: cat }} className="comic-btn comic-btn-primary">
                 התחילו מבחן 🦊
-              </a>
+              </Link>
             ) : (
-              <a href={`/world/${cat}/quiz`} className="comic-btn">
+              <Link to="/world/$category/quiz" params={{ category: cat }} className="comic-btn">
                 צפו בהסבר ומה חסר 🔒
-              </a>
+              </Link>
             )}
           </div>
           {!quizUnlocked && quizMissing.length > 0 && (
