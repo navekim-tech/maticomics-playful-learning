@@ -100,7 +100,7 @@ function WorldPage() {
             const card = (
               <div
                 className={`comic-card comic-card-hover block p-5 ${previousUnlocked ? "" : "opacity-60 grayscale"}`}
-                style={{ background: `var(--${meta.color})` }}
+               
               >
                 <div className="flex items-start gap-3">
                   <span className="font-display text-3xl font-extrabold opacity-70">

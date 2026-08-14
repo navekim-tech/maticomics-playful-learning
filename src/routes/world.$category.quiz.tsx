@@ -88,7 +88,7 @@ function WorldQuizPage() {
           ← חזרה ל{meta.title}
         </Link>
 
-        <header className="comic-card p-4 md:p-6 mb-6 text-center" style={{ background: `var(--${meta.color})` }}>
+        <header className="comic-card p-4 md:p-6 mb-6 text-center">
           <div className="text-5xl mb-2">🦊</div>
           <h1 className="font-display text-3xl md:text-4xl font-extrabold">מבחן פוקסי — {meta.title}</h1>
           <p className="mt-2 opacity-80">5 שאלות קצרות לסיכום העולם</p>

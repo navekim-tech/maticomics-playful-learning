@@ -1352,7 +1352,7 @@ function TopicPage() {
 
         <header
           className="comic-card p-4 md:p-6 mb-6 text-center"
-          style={{ background: `var(--${meta.color})` }}
+         
         >
           <div className="text-5xl mb-2">{meta.emoji}</div>
           <h1 className="font-display text-3xl md:text-4xl font-extrabold">{topic.title}</h1>
