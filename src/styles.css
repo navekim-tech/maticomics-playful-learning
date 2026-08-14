@@ -276,6 +276,101 @@
 .comic-btn-primary { background: var(--color-primary); color: var(--color-primary-foreground); }
 .comic-btn-accent { background: var(--color-accent); color: var(--color-accent-foreground); }
 
+/* Default app cards: keep the original transparent/glass comic feeling. */
+.comic-card,
+.comic-bubble,
+.glass-inner {
+  background: rgb(10 16 30 / 0.38) !important;
+  backdrop-filter: blur(14px) saturate(130%);
+  border-color: rgb(255 255 255 / 0.62) !important;
+  color: rgb(255 255 255 / 0.98) !important;
+}
+
+.comic-card {
+  border-color: rgb(255 255 255 / 0.62) !important;
+  box-shadow: 6px 6px 0 0 rgb(255 255 255 / 0.16), 0 12px 30px -12px rgb(0 0 0 / 0.65);
+}
+
+.comic-card :where(h1, h2, h3, h4, h5, h6, p, li, span, strong, label, small, a, code),
+.comic-bubble :where(h1, h2, h3, h4, h5, h6, p, li, span, strong, label, small, a, code),
+.glass-inner :where(h1, h2, h3, h4, h5, h6, p, li, span, strong, label, small, a, code),
+.comic-card :where(.text-muted-foreground, .text-foreground, .text-card-foreground),
+.comic-bubble :where(.text-muted-foreground, .text-foreground, .text-card-foreground),
+.glass-inner :where(.text-muted-foreground, .text-foreground, .text-card-foreground) {
+  color: rgb(255 255 255 / 0.98) !important;
+  -webkit-text-fill-color: rgb(255 255 255 / 0.98);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.45) !important;
+}
+
+.comic-card :where(.bg-card, .bg-muted, .bg-white\/80, .bg-background, .bg-secondary\/60, .bg-sun\/40),
+.comic-bubble :where(.bg-card, .bg-muted, .bg-white\/80, .bg-background, .bg-secondary\/60, .bg-sun\/40),
+.glass-inner :where(.bg-card, .bg-muted, .bg-white\/80, .bg-background, .bg-secondary\/60, .bg-sun\/40) {
+  background: rgb(10 16 30 / 0.26) !important;
+  border-color: rgb(255 255 255 / 0.58) !important;
+  color: rgb(255 255 255 / 0.98) !important;
+  -webkit-text-fill-color: rgb(255 255 255 / 0.98);
+}
+
+.comic-bubble {
+  border-color: rgb(255 255 255 / 0.62) !important;
+  box-shadow: 4px 4px 0 0 rgb(255 255 255 / 0.16), 0 12px 26px -14px rgb(0 0 0 / 0.65);
+}
+.comic-bubble::after { border-top-color: rgb(255 255 255 / 0.62); }
+.comic-bubble::before { border-top-color: rgb(10 16 30 / 0.38); }
+
+/* Foxy quiz: scoped contrast fix — readable, colorful, not dull. */
+.foxy-quiz-page .comic-card,
+.foxy-quiz-page .comic-bubble,
+.foxy-quiz-page .glass-inner {
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.94), rgb(255 247 237 / 0.90)) !important;
+  border-color: rgb(30 41 59 / 0.82) !important;
+  color: rgb(15 23 42) !important;
+  box-shadow: 6px 6px 0 0 rgb(245 158 11 / 0.45), 0 16px 34px -16px rgb(15 23 42 / 0.58);
+}
+
+.foxy-quiz-page .comic-card :where(h1, h2, h3, h4, h5, h6, p, li, span, strong, label, small, a, code),
+.foxy-quiz-page .comic-bubble :where(h1, h2, h3, h4, h5, h6, p, li, span, strong, label, small, a, code),
+.foxy-quiz-page .glass-inner :where(h1, h2, h3, h4, h5, h6, p, li, span, strong, label, small, a, code),
+.foxy-quiz-page .comic-card :where(.text-muted-foreground, .text-foreground, .text-card-foreground) {
+  color: rgb(15 23 42) !important;
+  -webkit-text-fill-color: rgb(15 23 42);
+  text-shadow: none !important;
+}
+
+.foxy-quiz-page header.comic-card {
+  background: linear-gradient(135deg, rgb(254 215 170 / 0.95), rgb(253 186 116 / 0.90), rgb(251 146 60 / 0.82)) !important;
+}
+
+.foxy-quiz-page .space-y-4 > .comic-card:nth-child(3n + 1) {
+  background: linear-gradient(135deg, rgb(224 242 254 / 0.95), rgb(186 230 253 / 0.88)) !important;
+}
+.foxy-quiz-page .space-y-4 > .comic-card:nth-child(3n + 2) {
+  background: linear-gradient(135deg, rgb(237 233 254 / 0.95), rgb(221 214 254 / 0.88)) !important;
+}
+.foxy-quiz-page .space-y-4 > .comic-card:nth-child(3n) {
+  background: linear-gradient(135deg, rgb(220 252 231 / 0.95), rgb(187 247 208 / 0.88)) !important;
+}
+
+.foxy-quiz-page .comic-card button:not(.comic-btn) {
+  background: rgb(255 255 255 / 0.92) !important;
+  color: rgb(15 23 42) !important;
+  -webkit-text-fill-color: rgb(15 23 42);
+  border-color: rgb(30 41 59 / 0.78) !important;
+  box-shadow: 3px 3px 0 0 rgb(15 23 42 / 0.22);
+}
+
+.foxy-quiz-page .comic-card button:not(.comic-btn).bg-accent,
+.foxy-quiz-page .comic-card button:not(.comic-btn):hover {
+  background: rgb(254 240 138 / 0.96) !important;
+}
+
+.foxy-quiz-page .comic-card .comic-btn {
+  background: rgb(255 255 255 / 0.96) !important;
+  color: rgb(15 23 42) !important;
+  -webkit-text-fill-color: rgb(15 23 42);
+  border-color: rgb(15 23 42) !important;
+}
+
 /* Blockly readability pass */
 .blockly-task-panel {
   background: rgb(10 16 30 / 0.48) !important;
