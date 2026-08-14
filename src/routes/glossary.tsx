@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { glossary } from "@/data/topics";
 import { ComicGuide } from "@/components/ComicGuide";
+import glossaryMap from "@/assets/glossary-map.png.asset.json";
 
 export const Route = createFileRoute("/glossary")({
   head: () => ({
