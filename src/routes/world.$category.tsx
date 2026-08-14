@@ -32,7 +32,7 @@ function WorldPage() {
   const earnedStars = list.reduce((sum, topic) => sum + getTopicStarCount(progress, topic.id), 0);
   const maxStars = list.length * 3;
   const quiz = progress.quizzes[cat];
-  const quizUnlocked = list.every((topic, index) => index === 0 || getTopicStarCount(progress, topic.id) > 0);
+  const quizUnlocked = list.every((topic) => isTopicDone(progress, topic.id));
   const progressPercent = list.length ? Math.round((completed / list.length) * 100) : 0;
 
   return (
@@ -138,7 +138,7 @@ function WorldPage() {
               <div className="text-4xl mb-2">🏁</div>
               <h2 className="font-display text-2xl font-bold">מבחן פוקסי סוף עולם</h2>
               <p className="text-sm text-muted-foreground mt-1">
-                5 שאלות קצרות: בסיס, יישום ואתגר. המבחן נפתח כשיש לפחות כוכב אחד בכל נושא.
+                5 שאלות קצרות: בסיס, יישום ואתגר. המבחן נפתח אחרי השלמת כל המטלות בעולם: קריאה, תרגול ומשימת קומיקס בכל נושא.
               </p>
               {quiz && <p className="mt-2 font-bold">ניסיון אחרון: {quiz.score}/{quiz.total}</p>}
             </div>
@@ -147,7 +147,7 @@ function WorldPage() {
                 התחילו מבחן 🦊
               </a>
             ) : (
-              <span className="comic-btn opacity-60 cursor-not-allowed">מבחן נעול 🔒</span>
+              <span className="comic-btn opacity-60 cursor-not-allowed">השלימו את כל מטלות העולם 🔒</span>
             )}
           </div>
         </section>
