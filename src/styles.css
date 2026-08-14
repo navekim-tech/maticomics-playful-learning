@@ -79,9 +79,9 @@
   --glossary-foreground: oklch(0.22 0.05 280);
   --sun: oklch(0.9 0.18 95);
 
-  /* Glass surfaces */
-  --glass: rgb(10 16 30 / 0.34);
-  --glass-foreground: oklch(0.99 0 0);
+  /* Readable comic surfaces */
+  --glass: rgb(255 255 255 / 0.92);
+  --glass-foreground: rgb(15 23 42);
 }
 
 @layer base {
@@ -117,15 +117,15 @@
 .comic-bubble,
 .glass-inner {
   background: var(--glass) !important;
-  backdrop-filter: blur(14px) saturate(130%);
-  border-color: rgb(255 255 255 / 0.62) !important;
+  backdrop-filter: blur(10px) saturate(115%);
+  border-color: rgb(15 23 42 / 0.78) !important;
   color: var(--glass-foreground) !important;
 }
 
 .comic-card {
-  border: 3px solid rgb(255 255 255 / 0.62);
+  border: 3px solid rgb(15 23 42 / 0.78);
   border-radius: var(--radius-2xl);
-  box-shadow: 6px 6px 0 0 rgb(255 255 255 / 0.16), 0 12px 30px -12px rgb(0 0 0 / 0.65);
+  box-shadow: 6px 6px 0 0 rgb(15 23 42 / 0.28), 0 12px 30px -12px rgb(0 0 0 / 0.45);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -135,9 +135,9 @@
 .comic-card :where(.text-muted-foreground, .text-foreground, .text-card-foreground),
 .comic-bubble :where(.text-muted-foreground, .text-foreground, .text-card-foreground),
 .glass-inner :where(.text-muted-foreground, .text-foreground, .text-card-foreground) {
-  color: rgb(255 255 255 / 0.98) !important;
-  -webkit-text-fill-color: rgb(255 255 255 / 0.98);
-  text-shadow: 0 1px 2px rgb(0 0 0 / 0.42);
+  color: rgb(15 23 42) !important;
+  -webkit-text-fill-color: rgb(15 23 42);
+  text-shadow: none !important;
 }
 
 .comic-card.opacity-60,
@@ -148,46 +148,62 @@
   filter: none !important;
 }
 
-.comic-card :where(.bg-card, .bg-muted, .bg-white\/80),
-.comic-bubble :where(.bg-card, .bg-muted, .bg-white\/80),
-.glass-inner :where(.bg-card, .bg-muted, .bg-white\/80) {
-  background: rgb(255 255 255 / 0.10) !important;
-  border-color: rgb(255 255 255 / 0.62) !important;
-  color: rgb(255 255 255 / 0.98) !important;
+.comic-card :where(.bg-card, .bg-muted, .bg-white\/80, .bg-background, .bg-secondary\/60, .bg-sun\/40),
+.comic-bubble :where(.bg-card, .bg-muted, .bg-white\/80, .bg-background, .bg-secondary\/60, .bg-sun\/40),
+.glass-inner :where(.bg-card, .bg-muted, .bg-white\/80, .bg-background, .bg-secondary\/60, .bg-sun\/40) {
+  background: rgb(255 255 255 / 0.96) !important;
+  border-color: rgb(15 23 42 / 0.72) !important;
+  color: rgb(15 23 42) !important;
+  -webkit-text-fill-color: rgb(15 23 42);
 }
 
 .comic-card :where(input, textarea, select),
 .comic-bubble :where(input, textarea, select),
 .glass-inner :where(input, textarea, select) {
-  background: rgb(255 255 255 / 0.12) !important;
-  color: rgb(255 255 255 / 0.98) !important;
-  -webkit-text-fill-color: rgb(255 255 255 / 0.98);
-  border-color: rgb(255 255 255 / 0.62) !important;
+  background: rgb(255 255 255 / 0.98) !important;
+  color: rgb(15 23 42) !important;
+  -webkit-text-fill-color: rgb(15 23 42);
+  border-color: rgb(15 23 42 / 0.72) !important;
 }
 
 .comic-card :where(input, textarea)::placeholder,
 .comic-bubble :where(input, textarea)::placeholder,
 .glass-inner :where(input, textarea)::placeholder {
-  color: rgb(255 255 255 / 0.72) !important;
-  -webkit-text-fill-color: rgb(255 255 255 / 0.72);
+  color: rgb(71 85 105) !important;
+  -webkit-text-fill-color: rgb(71 85 105);
+}
+
+.comic-card :where([class*="bg-slate-950"], [class*="bg-slate-900"], [class*="bg-gray-950"], [class*="bg-gray-900"]),
+.comic-bubble :where([class*="bg-slate-950"], [class*="bg-slate-900"], [class*="bg-gray-950"], [class*="bg-gray-900"]),
+.glass-inner :where([class*="bg-slate-950"], [class*="bg-slate-900"], [class*="bg-gray-950"], [class*="bg-gray-900"]) {
+  color: rgb(255 255 255 / 0.98) !important;
+  -webkit-text-fill-color: rgb(255 255 255 / 0.98);
+}
+
+.comic-card :where([class*="bg-slate-950"], [class*="bg-slate-900"], [class*="bg-gray-950"], [class*="bg-gray-900"]) :where(h1, h2, h3, h4, h5, h6, p, li, span, strong, label, small),
+.comic-bubble :where([class*="bg-slate-950"], [class*="bg-slate-900"], [class*="bg-gray-950"], [class*="bg-gray-900"]) :where(h1, h2, h3, h4, h5, h6, p, li, span, strong, label, small),
+.glass-inner :where([class*="bg-slate-950"], [class*="bg-slate-900"], [class*="bg-gray-950"], [class*="bg-gray-900"]) :where(h1, h2, h3, h4, h5, h6, p, li, span, strong, label, small) {
+  color: rgb(255 255 255 / 0.98) !important;
+  -webkit-text-fill-color: rgb(255 255 255 / 0.98);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.45) !important;
 }
 
 .comic-card-hover:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 10px 10px 0 0 rgb(255 255 255 / 0.20), 0 18px 36px -14px rgb(0 0 0 / 0.7);
+  box-shadow: 10px 10px 0 0 rgb(15 23 42 / 0.32), 0 18px 36px -14px rgb(0 0 0 / 0.55);
 }
 
 .glass-inner {
   border-radius: var(--radius-xl);
-  border: 2px solid rgb(255 255 255 / 0.62);
+  border: 2px solid rgb(15 23 42 / 0.72);
 }
 
 .comic-bubble {
   position: relative;
-  border: 3px solid rgb(255 255 255 / 0.62);
+  border: 3px solid rgb(15 23 42 / 0.78);
   border-radius: var(--radius-xl);
   padding: 0.85rem 1.05rem;
-  box-shadow: 4px 4px 0 0 rgb(255 255 255 / 0.16), 0 12px 26px -14px rgb(0 0 0 / 0.65);
+  box-shadow: 4px 4px 0 0 rgb(15 23 42 / 0.24), 0 12px 26px -14px rgb(0 0 0 / 0.45);
 }
 .comic-bubble::after {
   content: "";
@@ -197,7 +213,7 @@
   width: 0; height: 0;
   border-inline-start: 14px solid transparent;
   border-inline-end: 6px solid transparent;
-  border-top: 14px solid rgb(255 255 255 / 0.62);
+  border-top: 14px solid rgb(15 23 42 / 0.78);
 }
 .comic-bubble::before {
   content: "";
@@ -207,7 +223,7 @@
   width: 0; height: 0;
   border-inline-start: 11px solid transparent;
   border-inline-end: 5px solid transparent;
-  border-top: 11px solid rgb(10 16 30 / 0.34);
+  border-top: 11px solid rgb(255 255 255 / 0.92);
   z-index: 1;
 }
 
