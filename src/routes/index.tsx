@@ -78,7 +78,7 @@ function Index() {
 
         <div className="mb-8 grid gap-4 md:grid-cols-[1.2fr_0.8fr]">
           <ComicGuide message="היי! אני פוקסי. בחרו עולם, למדו שלב קצר, ואז לחצו על פוקסי AI כדי לקבל שאלת תרגול חדשה ברמה שמתאימה לכם." />
-          <section className="comic-card p-5 bg-card">
+          <section className="comic-card p-4">
             <h2 className="font-display text-2xl font-bold mb-2">מה חכם כאן?</h2>
             <ul className="space-y-2 text-sm leading-relaxed">
               <li>✨ שאלות מתחלפות לפי נושא ורמת קושי</li>

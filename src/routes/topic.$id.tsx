@@ -30,7 +30,7 @@ function Section({
   badge?: string;
 }) {
   return (
-    <section className="comic-card p-5 md:p-6">
+    <section className="comic-card p-4 md:p-4">
       <div className="flex items-center gap-2 mb-3">
         {badge && <span className="text-2xl">{badge}</span>}
         <h2 className="font-display text-xl md:text-2xl font-bold">{label}</h2>
@@ -230,7 +230,7 @@ function SmartPractice({ topic }: { topic: Topic }) {
   const hasPracticeStar = getTopicStars(progress, topic.id).includes("practice");
 
   return (
-    <section className="comic-card p-5 md:p-6 bg-card">
+    <section className="comic-card p-4 md:p-5">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between mb-4">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border-2 border-foreground bg-accent px-3 py-1 text-xs font-bold mb-2">
@@ -268,7 +268,7 @@ function SmartPractice({ topic }: { topic: Topic }) {
           <p className="font-bold mb-1">רמז חשיבה</p>
           <p className="text-sm leading-relaxed">{practice.hint}</p>
         </div>
-        <div className="rounded-2xl border-2 border-foreground bg-card p-4">
+        <div className="rounded-2xl border-2 border-foreground p-4">
           <p className="font-bold mb-1">פתרון / בדיקה</p>
           {showAnswer ? (
             <p className="text-sm leading-relaxed">{practice.answer}</p>
@@ -408,7 +408,7 @@ function ComicMission({ topic }: { topic: Topic }) {
   };
 
   return (
-    <section className="comic-card p-5 md:p-6 bg-card">
+    <section className="comic-card p-4 md:p-5">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between mb-4">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border-2 border-foreground bg-sun px-3 py-1 text-xs font-bold mb-2">
@@ -447,7 +447,7 @@ function ComicMission({ topic }: { topic: Topic }) {
         ))}
       </div>
 
-      <div className="rounded-2xl border-2 border-foreground bg-card p-4 md:p-5">
+      <div className="rounded-2xl border-2 border-foreground p-4 md:p-5">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           <h3 className="font-display text-lg font-bold">יוצר קומיקס אינטראקטיבי</h3>
           <button type="button" className="comic-btn text-sm" onClick={fillWithFoxyAI}>
@@ -1264,7 +1264,7 @@ function TopicBlocklyLab({ topic }: { topic: Topic }) {
   }, [taskIndex, topic.id]);
 
   return (
-    <section className="comic-card p-4 md:p-5 bg-card overflow-visible">
+    <section className="comic-card p-4 md:p-5 overflow-visible">
       <div className="mb-3 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border-2 border-foreground bg-accent px-3 py-1 text-xs font-bold mb-1">
@@ -1351,8 +1351,8 @@ function TopicPage() {
         </Link>
 
         <header
-          className="comic-card p-6 md:p-8 mb-6 text-center"
-          style={{ background: `var(--${meta.color})` }}
+          className="comic-card p-4 md:p-6 mb-6 text-center"
+         
         >
           <div className="text-5xl mb-2">{meta.emoji}</div>
           <h1 className="font-display text-3xl md:text-4xl font-extrabold">{topic.title}</h1>
@@ -1360,7 +1360,7 @@ function TopicPage() {
         </header>
 
         <div className="space-y-5">
-          <section className="comic-card p-5 md:p-6 bg-card">
+          <section className="comic-card p-4 md:p-5">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
                 <h2 className="font-display text-xl md:text-2xl font-bold">הכוכבים שלי בנושא</h2>
@@ -1415,7 +1415,7 @@ function TopicPage() {
             {topic.thinkingCheck}
           </Section>
 
-          <section className="comic-card p-5 md:p-6 bg-card">
+          <section className="comic-card p-4 md:p-5">
             <h2 className="font-display text-xl md:text-2xl font-bold mb-2">סיימתי לקרוא?</h2>
             <p className="text-sm text-muted-foreground mb-4">אם ההסבר והדוגמה ברורים, סמנו כוכב קריאה. אפשר לחזור ולעדכן בכל רגע.</p>
             <button
