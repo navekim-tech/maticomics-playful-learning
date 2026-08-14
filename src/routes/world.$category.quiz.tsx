@@ -94,6 +94,16 @@ function WorldQuizPage() {
           <p className="mt-2 opacity-80">5 שאלות קצרות לסיכום העולם</p>
         </header>
 
+        <section className="comic-card p-4 md:p-5 mb-6">
+          <h2 className="font-display text-2xl font-bold mb-3">מה זה מבחן פוקסי?</h2>
+          <div className="space-y-2 text-sm md:text-base leading-relaxed font-semibold">
+            <p>זהו מבחן קצר שמסכם את העולם שלמדתם.</p>
+            <p>פוקסי שואל 5 שאלות: חלק קלות, חלק שאלות חשיבה, וחלק אתגר קטן.</p>
+            <p>המטרה היא לבדוק שהבנתם את הרעיונות המרכזיים לפני שעוברים הלאה.</p>
+            <p>אל דאגה — אפשר לחזור לנושאים, לתרגל שוב, ולנסות להשתפר.</p>
+          </div>
+        </section>
+
         <div className="mb-6">
           <ComicGuide message="זה לא מבחן מלחיץ. זה בדיקת דרך: מה כבר יושב טוב, ומה כדאי לחזק לפני שעוברים הלאה." />
         </div>
