@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as GlossaryRouteImport } from './routes/glossary'
 import { Route as TopicIdRouteImport } from './routes/topic.$id'
 import { Route as WorldCategoryRouteImport } from './routes/world.$category'
+import { Route as WorldCategoryIndexRouteImport } from './routes/world.$category.index'
 import { Route as WorldCategoryQuizRouteImport } from './routes/world.$category.quiz'
 
 const IndexRoute = IndexRouteImport.update({
@@ -35,6 +36,11 @@ const WorldCategoryRoute = WorldCategoryRouteImport.update({
   path: '/world/$category',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorldCategoryIndexRoute = WorldCategoryIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => WorldCategoryRoute,
+} as any)
 const WorldCategoryQuizRoute = WorldCategoryQuizRouteImport.update({
   id: '/quiz',
   path: '/quiz',
@@ -47,13 +53,14 @@ export interface FileRoutesByFullPath {
   '/topic/$id': typeof TopicIdRoute
   '/world/$category': typeof WorldCategoryRouteWithChildren
   '/world/$category/quiz': typeof WorldCategoryQuizRoute
+  '/world/$category/': typeof WorldCategoryIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/glossary': typeof GlossaryRoute
   '/topic/$id': typeof TopicIdRoute
-  '/world/$category': typeof WorldCategoryRouteWithChildren
   '/world/$category/quiz': typeof WorldCategoryQuizRoute
+  '/world/$category': typeof WorldCategoryIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,6 +69,7 @@ export interface FileRoutesById {
   '/topic/$id': typeof TopicIdRoute
   '/world/$category': typeof WorldCategoryRouteWithChildren
   '/world/$category/quiz': typeof WorldCategoryQuizRoute
+  '/world/$category/': typeof WorldCategoryIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -71,13 +79,14 @@ export interface FileRouteTypes {
     | '/topic/$id'
     | '/world/$category'
     | '/world/$category/quiz'
+    | '/world/$category/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/glossary'
     | '/topic/$id'
-    | '/world/$category'
     | '/world/$category/quiz'
+    | '/world/$category'
   id:
     | '__root__'
     | '/'
@@ -85,6 +94,7 @@ export interface FileRouteTypes {
     | '/topic/$id'
     | '/world/$category'
     | '/world/$category/quiz'
+    | '/world/$category/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -124,6 +134,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorldCategoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/world/$category/': {
+      id: '/world/$category/'
+      path: '/'
+      fullPath: '/world/$category/'
+      preLoaderRoute: typeof WorldCategoryIndexRouteImport
+      parentRoute: typeof WorldCategoryRoute
+    }
     '/world/$category/quiz': {
       id: '/world/$category/quiz'
       path: '/quiz'
@@ -136,10 +153,12 @@ declare module '@tanstack/react-router' {
 
 interface WorldCategoryRouteChildren {
   WorldCategoryQuizRoute: typeof WorldCategoryQuizRoute
+  WorldCategoryIndexRoute: typeof WorldCategoryIndexRoute
 }
 
 const WorldCategoryRouteChildren: WorldCategoryRouteChildren = {
   WorldCategoryQuizRoute: WorldCategoryQuizRoute,
+  WorldCategoryIndexRoute: WorldCategoryIndexRoute,
 }
 
 const WorldCategoryRouteWithChildren = WorldCategoryRoute._addFileChildren(
