@@ -108,23 +108,49 @@
 
 /* Comic style helpers */
 .comic-card {
-  background: var(--color-card);
-  border: 3px solid var(--color-border);
+  background: color-mix(in oklab, var(--glass) 78%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 3px solid color-mix(in oklab, var(--glass-foreground) 55%, transparent);
   border-radius: var(--radius-2xl);
-  box-shadow: 6px 6px 0 0 var(--color-border);
+  box-shadow: 6px 6px 0 0 color-mix(in oklab, var(--glass) 85%, transparent), 0 12px 30px -12px rgb(0 0 0 / 0.6);
+  color: var(--glass-foreground);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.comic-card h1,
+.comic-card h2,
+.comic-card h3,
+.comic-card h4,
+.comic-card p,
+.comic-card li,
+.comic-card span,
+.comic-card strong,
+.comic-card label {
+  color: var(--glass-foreground);
+}
+.comic-card .text-muted-foreground {
+  color: color-mix(in oklab, var(--glass-foreground) 78%, transparent);
 }
 .comic-card-hover:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 10px 10px 0 0 var(--color-border);
+  box-shadow: 10px 10px 0 0 color-mix(in oklab, var(--glass) 85%, transparent), 0 18px 36px -14px rgb(0 0 0 / 0.65);
+}
+.glass-inner {
+  border-radius: var(--radius-xl);
+  border: 2px solid color-mix(in oklab, var(--glass-foreground) 40%, transparent);
+  background: color-mix(in oklab, var(--glass) 55%, transparent);
+  color: var(--glass-foreground);
 }
 .comic-bubble {
   position: relative;
-  background: var(--color-card);
-  border: 3px solid var(--color-border);
+  background: color-mix(in oklab, var(--glass) 78%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--glass-foreground);
+  border: 3px solid color-mix(in oklab, var(--glass-foreground) 55%, transparent);
   border-radius: var(--radius-xl);
-  padding: 1rem 1.25rem;
-  box-shadow: 4px 4px 0 0 var(--color-border);
+  padding: 0.85rem 1.05rem;
+  box-shadow: 4px 4px 0 0 color-mix(in oklab, var(--glass) 85%, transparent), 0 12px 26px -14px rgb(0 0 0 / 0.6);
 }
 .comic-bubble::after {
   content: "";
@@ -134,7 +160,7 @@
   width: 0; height: 0;
   border-inline-start: 14px solid transparent;
   border-inline-end: 6px solid transparent;
-  border-top: 14px solid var(--color-border);
+  border-top: 14px solid color-mix(in oklab, var(--glass-foreground) 55%, transparent);
 }
 .comic-bubble::before {
   content: "";
@@ -144,9 +170,10 @@
   width: 0; height: 0;
   border-inline-start: 11px solid transparent;
   border-inline-end: 5px solid transparent;
-  border-top: 11px solid var(--color-card);
+  border-top: 11px solid color-mix(in oklab, var(--glass) 78%, transparent);
   z-index: 1;
 }
+
 
 .comic-btn {
   display: inline-flex;
