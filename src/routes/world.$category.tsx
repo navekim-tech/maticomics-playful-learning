@@ -6,6 +6,7 @@ import auroriaMap from "@/assets/auroria-map.png.asset.json";
 import fractionsMap from "@/assets/fractions-map.webp.asset.json";
 import decimalsMap from "@/assets/decimals-map.png.asset.json";
 import percentagesMap from "@/assets/percentages-map.png.asset.json";
+import powersMap from "@/assets/powers-map.png.asset.json";
 
 
 export const Route = createFileRoute("/world/$category")({
@@ -47,7 +48,9 @@ function WorldPage() {
                 ? `url(${decimalsMap.url})`
                 : cat === "percentages"
                   ? `url(${percentagesMap.url})`
-                  : undefined,
+                  : cat === "powers"
+                    ? `url(${powersMap.url})`
+                    : undefined,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
