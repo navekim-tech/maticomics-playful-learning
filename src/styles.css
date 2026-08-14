@@ -80,7 +80,7 @@
   --sun: oklch(0.9 0.18 95);
 
   /* Glass surfaces */
-  --glass: oklch(0.24 0.04 265);
+  --glass: rgb(10 16 30 / 0.34);
   --glass-foreground: oklch(0.99 0 0);
 }
 
@@ -113,48 +113,81 @@
 }
 
 /* Comic style helpers */
+.comic-card,
+.comic-bubble,
+.glass-inner {
+  background: var(--glass) !important;
+  backdrop-filter: blur(14px) saturate(130%);
+  border-color: rgb(255 255 255 / 0.62) !important;
+  color: var(--glass-foreground) !important;
+}
+
 .comic-card {
-  background: color-mix(in oklab, var(--glass) 78%, transparent);
-  backdrop-filter: blur(10px);
-  border: 3px solid color-mix(in oklab, var(--glass-foreground) 55%, transparent);
+  border: 3px solid rgb(255 255 255 / 0.62);
   border-radius: var(--radius-2xl);
-  box-shadow: 6px 6px 0 0 color-mix(in oklab, var(--glass) 85%, transparent), 0 12px 30px -12px rgb(0 0 0 / 0.6);
-  color: var(--glass-foreground);
+  box-shadow: 6px 6px 0 0 rgb(255 255 255 / 0.16), 0 12px 30px -12px rgb(0 0 0 / 0.65);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-.comic-card h1,
-.comic-card h2,
-.comic-card h3,
-.comic-card h4,
-.comic-card p,
-.comic-card li,
-.comic-card span,
-.comic-card strong,
-.comic-card label {
-  color: var(--glass-foreground);
+
+.comic-card :where(h1, h2, h3, h4, h5, h6, p, li, span, strong, label, small, a, code),
+.comic-bubble :where(h1, h2, h3, h4, h5, h6, p, li, span, strong, label, small, a, code),
+.glass-inner :where(h1, h2, h3, h4, h5, h6, p, li, span, strong, label, small, a, code),
+.comic-card :where(.text-muted-foreground, .text-foreground, .text-card-foreground),
+.comic-bubble :where(.text-muted-foreground, .text-foreground, .text-card-foreground),
+.glass-inner :where(.text-muted-foreground, .text-foreground, .text-card-foreground) {
+  color: rgb(255 255 255 / 0.98) !important;
+  -webkit-text-fill-color: rgb(255 255 255 / 0.98);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.42);
 }
-.comic-card .text-muted-foreground {
-  color: color-mix(in oklab, var(--glass-foreground) 78%, transparent);
+
+.comic-card.opacity-60,
+.comic-card.grayscale,
+.comic-card-hover.opacity-60,
+.comic-card-hover.grayscale {
+  opacity: 1 !important;
+  filter: none !important;
 }
+
+.comic-card :where(.bg-card, .bg-muted, .bg-white\/80),
+.comic-bubble :where(.bg-card, .bg-muted, .bg-white\/80),
+.glass-inner :where(.bg-card, .bg-muted, .bg-white\/80) {
+  background: rgb(255 255 255 / 0.10) !important;
+  border-color: rgb(255 255 255 / 0.62) !important;
+  color: rgb(255 255 255 / 0.98) !important;
+}
+
+.comic-card :where(input, textarea, select),
+.comic-bubble :where(input, textarea, select),
+.glass-inner :where(input, textarea, select) {
+  background: rgb(255 255 255 / 0.12) !important;
+  color: rgb(255 255 255 / 0.98) !important;
+  -webkit-text-fill-color: rgb(255 255 255 / 0.98);
+  border-color: rgb(255 255 255 / 0.62) !important;
+}
+
+.comic-card :where(input, textarea)::placeholder,
+.comic-bubble :where(input, textarea)::placeholder,
+.glass-inner :where(input, textarea)::placeholder {
+  color: rgb(255 255 255 / 0.72) !important;
+  -webkit-text-fill-color: rgb(255 255 255 / 0.72);
+}
+
 .comic-card-hover:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 10px 10px 0 0 color-mix(in oklab, var(--glass) 85%, transparent), 0 18px 36px -14px rgb(0 0 0 / 0.65);
+  box-shadow: 10px 10px 0 0 rgb(255 255 255 / 0.20), 0 18px 36px -14px rgb(0 0 0 / 0.7);
 }
+
 .glass-inner {
   border-radius: var(--radius-xl);
-  border: 2px solid color-mix(in oklab, var(--glass-foreground) 40%, transparent);
-  background: color-mix(in oklab, var(--glass) 55%, transparent);
-  color: var(--glass-foreground);
+  border: 2px solid rgb(255 255 255 / 0.62);
 }
+
 .comic-bubble {
   position: relative;
-  background: color-mix(in oklab, var(--glass) 78%, transparent);
-  backdrop-filter: blur(10px);
-  color: var(--glass-foreground);
-  border: 3px solid color-mix(in oklab, var(--glass-foreground) 55%, transparent);
+  border: 3px solid rgb(255 255 255 / 0.62);
   border-radius: var(--radius-xl);
   padding: 0.85rem 1.05rem;
-  box-shadow: 4px 4px 0 0 color-mix(in oklab, var(--glass) 85%, transparent), 0 12px 26px -14px rgb(0 0 0 / 0.6);
+  box-shadow: 4px 4px 0 0 rgb(255 255 255 / 0.16), 0 12px 26px -14px rgb(0 0 0 / 0.65);
 }
 .comic-bubble::after {
   content: "";
@@ -164,7 +197,7 @@
   width: 0; height: 0;
   border-inline-start: 14px solid transparent;
   border-inline-end: 6px solid transparent;
-  border-top: 14px solid color-mix(in oklab, var(--glass-foreground) 55%, transparent);
+  border-top: 14px solid rgb(255 255 255 / 0.62);
 }
 .comic-bubble::before {
   content: "";
@@ -174,7 +207,7 @@
   width: 0; height: 0;
   border-inline-start: 11px solid transparent;
   border-inline-end: 5px solid transparent;
-  border-top: 11px solid color-mix(in oklab, var(--glass) 78%, transparent);
+  border-top: 11px solid rgb(10 16 30 / 0.34);
   z-index: 1;
 }
 
@@ -199,8 +232,31 @@
 .comic-btn:active { transform: translate(2px, 2px); box-shadow: 0 0 0 0 var(--color-border); }
 .comic-card .comic-btn,
 .comic-bubble .comic-btn,
+.glass-inner .comic-btn {
+  background: rgb(255 255 255 / 0.96) !important;
+  color: rgb(15 23 42) !important;
+  -webkit-text-fill-color: rgb(15 23 42);
+  border-color: rgb(15 23 42) !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+.comic-card .comic-btn *,
+.comic-bubble .comic-btn *,
+.glass-inner .comic-btn * {
+  color: rgb(15 23 42) !important;
+  -webkit-text-fill-color: rgb(15 23 42);
+}
 .comic-btn { background: var(--color-card); color: var(--color-foreground); border-color: var(--color-border); }
 .comic-card .comic-btn-primary,
+.comic-bubble .comic-btn-primary,
+.glass-inner .comic-btn-primary,
+.comic-card .comic-btn-accent,
+.comic-bubble .comic-btn-accent,
+.glass-inner .comic-btn-accent {
+  background: rgb(255 255 255 / 0.96) !important;
+  color: rgb(15 23 42) !important;
+  -webkit-text-fill-color: rgb(15 23 42);
+}
 .comic-btn-primary { background: var(--color-primary); color: var(--color-primary-foreground); }
 .comic-btn-accent { background: var(--color-accent); color: var(--color-accent-foreground); }
 
