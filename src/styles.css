@@ -40,6 +40,8 @@
   --color-glossary: var(--glossary);
   --color-glossary-foreground: var(--glossary-foreground);
   --color-sun: var(--sun);
+  --color-glass: var(--glass);
+  --color-glass-foreground: var(--glass-foreground);
   --font-display: "Fredoka", "Rubik", system-ui, sans-serif;
   --font-sans: "Rubik", system-ui, sans-serif;
 }
@@ -76,6 +78,10 @@
   --glossary: oklch(0.78 0.16 320);     /* pink-purple */
   --glossary-foreground: oklch(0.22 0.05 280);
   --sun: oklch(0.9 0.18 95);
+
+  /* Glass surfaces */
+  --glass: oklch(0.24 0.04 265);
+  --glass-foreground: oklch(0.99 0 0);
 }
 
 @layer base {
@@ -193,6 +199,10 @@
 }
 .comic-btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 0 var(--color-border); }
 .comic-btn:active { transform: translate(2px, 2px); box-shadow: 0 0 0 0 var(--color-border); }
+.comic-card .comic-btn,
+.comic-bubble .comic-btn,
+.comic-btn { background: var(--color-card); color: var(--color-foreground); border-color: var(--color-border); }
+.comic-card .comic-btn-primary,
 .comic-btn-primary { background: var(--color-primary); color: var(--color-primary-foreground); }
 .comic-btn-accent { background: var(--color-accent); color: var(--color-accent-foreground); }
 
