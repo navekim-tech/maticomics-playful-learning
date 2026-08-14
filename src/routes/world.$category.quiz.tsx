@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { categoryMeta, topics, type Category } from "@/data/topics";
 import { ComicGuide } from "@/components/ComicGuide";
-import { getTopicStarCount, useLearningProgress } from "@/lib/learning-progress";
+import { isTopicDone, useLearningProgress } from "@/lib/learning-progress";
 
 type QuizQuestion = {
   question: string;
@@ -72,7 +72,7 @@ function WorldQuizPage() {
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [submitted, setSubmitted] = useState(false);
   const questions = useMemo(() => quizBank[cat], [cat]);
-  const unlocked = worldTopics.every((topic, index) => index === 0 || getTopicStarCount(progress, topic.id) > 0);
+  const unlocked = worldTopics.every((topic) => isTopicDone(progress, topic.id));
   const score = questions.reduce((sum, question, index) => sum + (answers[index] === question.answer ? 1 : 0), 0);
   const previous = progress.quizzes[cat];
 
@@ -112,7 +112,7 @@ function WorldQuizPage() {
           <section className="comic-card p-4 md:p-5 mb-6 ">
             <h2 className="font-display text-xl font-bold mb-2">המבחן עדיין נעול רכה 🔒</h2>
             <p className="text-sm leading-relaxed">
-              כדאי לאסוף לפחות כוכב אחד בכל נושא בעולם הזה לפני המבחן. אם אתם רק בודקים את המערכת, אפשר עדיין לענות — אבל לתלמידים זה יהיה סימן לחזור למסלול.
+              כדי לפתוח את מבחן פוקסי צריך להשלים את כל המטלות בכל נושאי העולם: קריאה, תרגול ומשימת קומיקס. אם אתם רק בודקים את המערכת, אפשר עדיין לענות — אבל לתלמידים זה יהיה סימן לחזור למסלול ולהשלים את המטלות.
             </p>
           </section>
         )}
