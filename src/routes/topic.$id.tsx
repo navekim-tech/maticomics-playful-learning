@@ -1281,10 +1281,10 @@ function TopicBlocklyLab({ topic }: { topic: Topic }) {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]" dir="rtl">
-        <aside className="rounded-3xl border-2 border-foreground bg-sun/35 p-4 xl:max-h-[640px] xl:overflow-auto">
+        <aside className="blockly-task-panel rounded-3xl border-2 border-foreground bg-sun/35 p-4 xl:max-h-[640px] xl:overflow-auto">
           <h3 className="font-display text-lg font-bold mb-2">השאלה / הבעיה</h3>
           <p className="font-bold leading-relaxed">{task.story}</p>
-          <div className="mt-4 rounded-2xl bg-white/80 border-2 border-dashed border-foreground p-3 text-sm leading-relaxed">
+          <div className="blockly-instructions mt-4 rounded-2xl bg-white/80 border-2 border-dashed border-foreground p-3 text-sm leading-relaxed">
             <p className="font-bold mb-1">מה התוכנית צריכה לעשות?</p>
             <ol className="list-decimal list-inside space-y-1">
               <li>להתחיל בבלוק כתום.</li>
@@ -1294,7 +1294,7 @@ function TopicBlocklyLab({ topic }: { topic: Topic }) {
             </ol>
             <p className="mt-2 font-bold">{task.expectedHint}</p>
           </div>
-          <div className="mt-4 rounded-2xl bg-slate-950 p-4 text-white whitespace-pre-line text-sm leading-relaxed min-h-32">
+          <div className="blockly-output mt-4 rounded-2xl bg-slate-950 p-4 text-white whitespace-pre-line text-sm leading-relaxed min-h-32">
             {output}
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
@@ -1302,7 +1302,7 @@ function TopicBlocklyLab({ topic }: { topic: Topic }) {
           </p>
         </aside>
 
-        <div className="rounded-3xl border-2 border-foreground bg-white overflow-hidden min-h-[640px] relative">
+        <div className="blockly-workspace-shell rounded-3xl border-2 border-foreground bg-white overflow-hidden min-h-[640px] relative">
           {!isBlocklyOpen ? (
             <div className="flex h-[640px] flex-col items-center justify-center gap-4 p-8 text-center" dir="rtl">
               <div className="text-6xl">🧱</div>
@@ -1315,7 +1315,7 @@ function TopicBlocklyLab({ topic }: { topic: Topic }) {
               </button>
             </div>
           ) : (
-            <div ref={blocklyDivRef} className="h-[640px] w-full [&_.blocklyToolboxDiv]:!bg-orange-50 [&_.blocklyFlyout]:!z-20 [&_.blocklyWidgetDiv]:!z-50" dir="ltr" />
+            <div ref={blocklyDivRef} className="blockly-canvas h-[640px] w-full [&_.blocklyToolboxDiv]:!bg-orange-50 [&_.blocklyFlyout]:!z-20 [&_.blocklyWidgetDiv]:!z-50" dir="ltr" />
           )}
         </div>
       </div>
