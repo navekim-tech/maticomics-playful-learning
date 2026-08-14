@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { categoryMeta, topics, type Category } from "@/data/topics";
 import { ComicGuide } from "@/components/ComicGuide";
-import { isTopicDone, useLearningProgress } from "@/lib/learning-progress";
+import { isTopicQuizReady, useLearningProgress } from "@/lib/learning-progress";
 
 type QuizQuestion = {
   question: string;
@@ -72,7 +72,7 @@ function WorldQuizPage() {
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [submitted, setSubmitted] = useState(false);
   const questions = useMemo(() => quizBank[cat], [cat]);
-  const unlocked = worldTopics.every((topic) => isTopicDone(progress, topic.id));
+  const unlocked = worldTopics.every((topic) => isTopicQuizReady(progress, topic.id));
   const score = questions.reduce((sum, question, index) => sum + (answers[index] === question.answer ? 1 : 0), 0);
   const previous = progress.quizzes[cat];
 
@@ -112,7 +112,7 @@ function WorldQuizPage() {
           <section className="comic-card p-4 md:p-5 mb-6 ">
             <h2 className="font-display text-xl font-bold mb-2">המבחן עדיין נעול רכה 🔒</h2>
             <p className="text-sm leading-relaxed">
-              כדי לפתוח את מבחן פוקסי צריך להשלים את כל המטלות בכל נושאי העולם: קריאה, תרגול ומשימת קומיקס. אם אתם רק בודקים את המערכת, אפשר עדיין לענות — אבל לתלמידים זה יהיה סימן לחזור למסלול ולהשלים את המטלות.
+              כדי לפתוח את מבחן פוקסי צריך להשלים בכל נושא את מטלת הקריאה ואת מטלת התרגול. משימת הקומיקס היא בשביל FUN והיא לא חוסמת את המבחן. אם אתם רק בודקים את המערכת, אפשר עדיין לענות — אבל לתלמידים זה יהיה סימן לחזור לקריאה ולתרגול.
             </p>
           </section>
         )}
