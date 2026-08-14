@@ -46,6 +46,11 @@ export function isTopicDone(progress: LearningProgress, topicId: string): boolea
   return getTopicStarCount(progress, topicId) >= 3;
 }
 
+export function isTopicQuizReady(progress: LearningProgress, topicId: string): boolean {
+  const stars = getTopicStars(progress, topicId);
+  return stars.includes("read") && stars.includes("practice");
+}
+
 export function useLearningProgress() {
   const [progress, setProgressState] = useState<LearningProgress>(emptyProgress);
 
