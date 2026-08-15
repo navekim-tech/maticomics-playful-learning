@@ -14,6 +14,7 @@ import { Route as GlossaryRouteImport } from './routes/glossary'
 import { Route as TopicIdRouteImport } from './routes/topic.$id'
 import { Route as WorldCategoryRouteImport } from './routes/world.$category'
 import { Route as ApiAiFoxyHintRouteImport } from './routes/api/ai/foxy-hint'
+import { Route as ApiAiStatusRouteImport } from './routes/api/ai/status'
 import { Route as WorldCategoryIndexRouteImport } from './routes/world.$category.index'
 import { Route as WorldCategoryQuizRouteImport } from './routes/world.$category.quiz'
 
@@ -42,6 +43,11 @@ const ApiAiFoxyHintRoute = ApiAiFoxyHintRouteImport.update({
   path: '/api/ai/foxy-hint',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAiStatusRoute = ApiAiStatusRouteImport.update({
+  id: '/api/ai/status',
+  path: '/api/ai/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WorldCategoryIndexRoute = WorldCategoryIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/topic/$id': typeof TopicIdRoute
   '/world/$category': typeof WorldCategoryRouteWithChildren
   '/api/ai/foxy-hint': typeof ApiAiFoxyHintRoute
+  '/api/ai/status': typeof ApiAiStatusRoute
   '/world/$category/quiz': typeof WorldCategoryQuizRoute
   '/world/$category/': typeof WorldCategoryIndexRoute
 }
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/glossary': typeof GlossaryRoute
   '/topic/$id': typeof TopicIdRoute
   '/api/ai/foxy-hint': typeof ApiAiFoxyHintRoute
+  '/api/ai/status': typeof ApiAiStatusRoute
   '/world/$category/quiz': typeof WorldCategoryQuizRoute
   '/world/$category': typeof WorldCategoryIndexRoute
 }
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/topic/$id': typeof TopicIdRoute
   '/world/$category': typeof WorldCategoryRouteWithChildren
   '/api/ai/foxy-hint': typeof ApiAiFoxyHintRoute
+  '/api/ai/status': typeof ApiAiStatusRoute
   '/world/$category/quiz': typeof WorldCategoryQuizRoute
   '/world/$category/': typeof WorldCategoryIndexRoute
 }
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/topic/$id'
     | '/world/$category'
     | '/api/ai/foxy-hint'
+    | '/api/ai/status'
     | '/world/$category/quiz'
     | '/world/$category/'
   fileRoutesByTo: FileRoutesByTo
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/glossary'
     | '/topic/$id'
     | '/api/ai/foxy-hint'
+    | '/api/ai/status'
     | '/world/$category/quiz'
     | '/world/$category'
   id:
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/topic/$id'
     | '/world/$category'
     | '/api/ai/foxy-hint'
+    | '/api/ai/status'
     | '/world/$category/quiz'
     | '/world/$category/'
   fileRoutesById: FileRoutesById
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   TopicIdRoute: typeof TopicIdRoute
   WorldCategoryRoute: typeof WorldCategoryRouteWithChildren
   ApiAiFoxyHintRoute: typeof ApiAiFoxyHintRoute
+  ApiAiStatusRoute: typeof ApiAiStatusRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -154,6 +167,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAiFoxyHintRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/ai/status': {
+      id: '/api/ai/status'
+      path: '/api/ai/status'
+      fullPath: '/api/ai/status'
+      preLoaderRoute: typeof ApiAiStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/world/$category/': {
       id: '/world/$category/'
       path: '/'
@@ -191,6 +211,7 @@ const rootRouteChildren: RootRouteChildren = {
   TopicIdRoute: TopicIdRoute,
   WorldCategoryRoute: WorldCategoryRouteWithChildren,
   ApiAiFoxyHintRoute: ApiAiFoxyHintRoute,
+  ApiAiStatusRoute: ApiAiStatusRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
