@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { categoryMeta, topics, type Category } from "@/data/topics";
 import { ComicGuide } from "@/components/ComicGuide";
+import { requestFoxyHint } from "@/lib/foxy-ai";
 import { getTopicStars, isTopicQuizReady, useLearningProgress } from "@/lib/learning-progress";
 
 type QuizQuestion = {
@@ -70,6 +71,9 @@ function WorldQuizPage() {
   const worldTopics = topics.filter((topic) => topic.category === cat);
   const { progress, saveQuizScore } = useLearningProgress();
   const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [aiHints, setAiHints] = useState<Record<number, string>>({});
+  const [hintLoading, setHintLoading] = useState<Record<number, boolean>>({});
+  const [hintErrors, setHintErrors] = useState<Record<number, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const questions = useMemo(() => quizBank[cat], [cat]);
   const unlocked = worldTopics.every((topic) => isTopicQuizReady(progress, topic.id));
@@ -89,6 +93,28 @@ function WorldQuizPage() {
   const submit = () => {
     setSubmitted(true);
     saveQuizScore(cat, score, questions.length);
+  };
+
+  const askFoxyForHint = async (question: QuizQuestion, index: number) => {
+    setHintLoading((current) => ({ ...current, [index]: true }));
+    setHintErrors((current) => ({ ...current, [index]: "" }));
+
+    try {
+      const result = await requestFoxyHint({
+        category: cat,
+        question: question.question,
+        options: question.options,
+        topicHint: question.topicHint,
+      });
+      setAiHints((current) => ({ ...current, [index]: result.hint }));
+    } catch {
+      setHintErrors((current) => ({
+        ...current,
+        [index]: "פוקסי לא הצליח להביא רמז כרגע. אפשר לנסות שוב עוד רגע.",
+      }));
+    } finally {
+      setHintLoading((current) => ({ ...current, [index]: false }));
+    }
   };
 
   return (
@@ -149,6 +175,24 @@ function WorldQuizPage() {
                 {question.topicHint && <span className="rounded-full border-2 border-foreground bg-accent px-2 py-1 text-xs font-bold">{question.topicHint}</span>}
               </div>
               <p className="mb-4 leading-relaxed">{question.question}</p>
+              <div className="mb-4 rounded-2xl border-2 border-foreground bg-yellow-100/90 p-3 text-sm text-slate-950 shadow-[3px_3px_0_rgba(15,23,42,0.25)]">
+                {aiHints[index] ? (
+                  <p className="font-semibold leading-relaxed">🦊 {aiHints[index]}</p>
+                ) : (
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <p className="font-semibold">נתקעתם? פוקסי יכול לתת רמז בלי לגלות את התשובה.</p>
+                    <button
+                      type="button"
+                      className="comic-btn text-xs"
+                      disabled={!unlocked || hintLoading[index]}
+                      onClick={() => askFoxyForHint(question, index)}
+                    >
+                      {hintLoading[index] ? "פוקסי חושב..." : "רמז מפוקסי"}
+                    </button>
+                  </div>
+                )}
+                {hintErrors[index] && <p className="mt-2 text-xs font-bold text-red-700">{hintErrors[index]}</p>}
+              </div>
               <div className="grid gap-2">
                 {question.options.map((option, optionIndex) => {
                   const selected = answers[index] === optionIndex;
