@@ -12,6 +12,7 @@ type FoxyHintRequest = {
   question?: string;
   options?: string[];
   topicHint?: string;
+  teacherHint?: string;
 };
 
 type ProviderName = "demo" | "gemini" | "openai-compatible";
@@ -72,7 +73,7 @@ async function safeJson(request: Request): Promise<unknown> {
 }
 
 function validatePayload(payload: unknown):
-  | { ok: true; value: Required<Pick<FoxyHintRequest, "category" | "question" | "options">> & { topicHint?: string } }
+  | { ok: true; value: Required<Pick<FoxyHintRequest, "category" | "question" | "options">> & { topicHint?: string; teacherHint?: string } }
   | { ok: false; error: string } {
   if (!payload || Array.isArray(payload) || typeof payload !== "object") {
     return { ok: false, error: "Invalid request" };
@@ -98,6 +99,7 @@ function validatePayload(payload: unknown):
       question: fields.question.slice(0, MAX_TEXT_LENGTH),
       options: fields.options.map((option) => String(option).slice(0, 160)),
       topicHint: fields.topicHint?.slice(0, 80),
+      teacherHint: fields.teacherHint?.slice(0, 280),
     },
   };
 }
@@ -113,16 +115,18 @@ function readEnv(contextEnv?: Record<string, string | undefined>): Record<string
   };
 }
 
-function buildPrompt(input: { category: string; question: string; options: string[]; topicHint?: string }): string {
+function buildPrompt(input: { category: string; question: string; options: string[]; topicHint?: string; teacherHint?: string }): string {
   const category = categoryMeta[input.category as Category]?.title ?? input.category;
   return [
     "אתה פוקסי, עוזר לימודי קצר לילדים במתמטיקומיקס.",
     "כתוב בעברית פשוטה, חמה ומעודדת.",
     "תן רמז אחד בלבד לשאלה מתמטית. אל תגלה את התשובה ואל תגיד איזו אפשרות נכונה.",
+    "אם יש 'רמז מורה', השתמש בו כבסיס המרכזי ונסח אותו יפה לילד/ה. אל תחליף אותו ברמז כללי.",
     "אם השאלה לא מתמטית או לא לימודית, החזר בעדינות שכרגע עוזרים רק במתמטיקה.",
     "אורך מקסימלי: 2 משפטים קצרים.",
     `עולם: ${category}`,
     input.topicHint ? `נושא: ${input.topicHint}` : undefined,
+    input.teacherHint ? `רמז מורה: ${input.teacherHint}` : undefined,
     `שאלה: ${input.question}`,
     `אפשרויות: ${input.options.join(" | ")}`,
   ].filter(Boolean).join("\n");
@@ -175,7 +179,11 @@ async function callOpenAICompatible({ apiKey, baseUrl, model, prompt }: { apiKey
   return data.choices?.[0]?.message?.content?.trim() ?? "";
 }
 
-function buildDemoHint(input: { topicHint?: string; question: string }): string {
+function buildDemoHint(input: { topicHint?: string; question: string; teacherHint?: string }): string {
+  if (input.teacherHint) {
+    return input.teacherHint;
+  }
+
   const topic = input.topicHint ? ` בנושא ${input.topicHint}` : "";
   if (input.question.includes("אחוז") || input.question.includes("%")) {
     return "נסו לחשוב על אחוז כחלק מתוך 100. פוקסי מציע להפוך את זה קודם לשבר או לכמות קטנה יותר.";
