@@ -5,6 +5,7 @@ export type FoxyHintRequest = {
   question: string;
   options: string[];
   topicHint?: string;
+  teacherHint?: string;
 };
 
 export type FoxyHintResponse = {
